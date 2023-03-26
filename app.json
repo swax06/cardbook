@@ -1,0 +1,7 @@
+{
+  "name": "CardBook",
+  "displayName": "CardBook",
+  "androidNavigationBar": {
+    "visible": "sticky-immersive"
+  }
+}
