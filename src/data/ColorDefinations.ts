@@ -1,4 +1,5 @@
 export const ACCENT_COLORS = [
+    '#4285f4',
     '#d73964',
     '#d23440',
     '#db643a',
@@ -21,9 +22,7 @@ export const ACCENT_COLORS = [
     '#2d68cd',
     '#9946c7',
     '#d9639e',
-    '#6d6f74',
     '#939287',
-    // '#868ea3',
 ];
 
 export const CARD_COLORS = [
@@ -50,6 +49,9 @@ export const CARD_COLORS = [
     '#9946c7',
     '#d9639e',
     '#6d6f74',
-    '#939287',
-    // '#868ea3',
+    // '#f1f1f1',
+    '#4285F4',
 ];
+
+export const CARD_DARK_FONT_COLOR = '#1d1d1d';
+export const CARD_LIGHT_FONT_COLOR = '#f0f0f0';

@@ -1,9 +1,8 @@
-import { SharedElement } from 'navigation-react-native';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useTheme } from '../../context/ThemeContext';
-import CardComponent from '../../shared-components/CardComponent';
+import CardFrontComponent from '../../shared-components/CardFrontComponent';
 import EmptySpace from '../../shared-components/EmptySpace';
 import { useCardData } from './AddCardContext';
 
@@ -12,14 +11,12 @@ const AddCardHeaderComponent = () => {
   const { theme } = useTheme();
 
   return (
-    <View style={{ ...styles.container, backgroundColor: theme.colors.inverseOnSurface }}>
+    <View style={{ ...styles.container, backgroundColor: theme.colors.card }}>
       {/* <EmptySpace space={20} /> */}
       <Text style={styles.heading} variant="headlineSmall">{`${pageMode} Card Details`}</Text>
       <EmptySpace space={5} />
       <View style={{padding: 10}}>
-        <SharedElement name={cardInput.id}>
-          <CardComponent card={cardInput} />
-        </SharedElement>
+        <CardFrontComponent card={cardInput} />
       </View>
     </View>
   );

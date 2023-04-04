@@ -7,7 +7,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
 
-class SystemColorsPackage : ReactPackage {
+class ReactHelperPackage : ReactPackage {
 
     override fun createViewManagers(
         reactContext: ReactApplicationContext
@@ -15,5 +15,5 @@ class SystemColorsPackage : ReactPackage {
 
     override fun createNativeModules(
         reactContext: ReactApplicationContext
-    ): MutableList<NativeModule> = listOf(SystemColorsModule(reactContext)).toMutableList()
+    ): MutableList<NativeModule> = listOf(ReactHelperModule(reactContext)).toMutableList()
 }

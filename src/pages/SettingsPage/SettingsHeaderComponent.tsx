@@ -7,7 +7,7 @@ import EmptySpace from '../../shared-components/EmptySpace';
 const SettingsHeaderComponent = () => {
     const { theme } = useTheme();
     return (
-        <View style={{ ...styles.container, backgroundColor: theme.colors.inverseOnSurface }}>
+        <View style={{ ...styles.container, backgroundColor: theme.colors.card }}>
             {/* <EmptySpace space={20} /> */}
             <Text style={styles.heading} variant="headlineSmall">Settings</Text>
             <EmptySpace space={5}/>

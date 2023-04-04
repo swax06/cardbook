@@ -1,7 +1,7 @@
-import EncryptedStorage from "react-native-encrypted-storage";
+import EncryptedStorage from 'react-native-encrypted-storage';
 import uuid from 'react-native-uuid';
 import { CARD_COLORS } from '../data/ColorDefinations';
-import { ICard } from "../types/CardInterface";
+import { ICard } from '../types/CardInterface';
 
 export const removeCardNumberSpaces = (cardNumber: string) => {
     return cardNumber.replace(' ', '');
@@ -38,13 +38,13 @@ export async function clearStorage() {
 export const newCard = (): ICard => (
     {
         id: String(uuid.v4()),
-        cardHolder: "",
-        cardNumber: "",
-        expiryDate: "",
-        securityCode: "",
-        cardPin: "",
-        bankName: "",
-        cardName: "",
+        cardHolder: '',
+        cardNumber: '',
+        expiryDate: '',
+        securityCode: '',
+        cardPin: '',
+        bankName: '',
+        cardName: '',
         cardType: 'Other',
         cardColor: CARD_COLORS[Math.floor(Math.random() * CARD_COLORS.length )],
     }

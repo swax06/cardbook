@@ -1,16 +1,16 @@
 import { ScrollView, StyleSheet } from 'react-native';
-import React, { useContext } from 'react';
+import React from 'react';
 import CardInputComponent from './CardInputComponent';
 import AddCardHeaderComponent from './AddCardHeaderComponent';
 import AddCardProvider from './AddCardContext';
 import EmptySpace from '../../shared-components/EmptySpace';
 import AddCardFooterComponent from './AddCardFooterComponent';
-import { NavigationContext } from 'navigation-react';
+import { useRoute } from '@react-navigation/native';
 
 const AddCardPage = () => {
-  const { data } = useContext(NavigationContext);
+  const params: any = useRoute().params;
   return (
-    <AddCardProvider card={data.id ? data : null}>
+    <AddCardProvider card={params?.card}>
       <AddCardHeaderComponent />
       <ScrollView style={styles.inputs}>
         <CardInputComponent />

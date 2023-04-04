@@ -1,18 +1,19 @@
 import { StyleSheet, View } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { Chip, IconButton, Text } from 'react-native-paper';
 import { cardTypes, cardTypeValues } from '../../types/CardInterface';
 import { useTheme } from '../../context/ThemeContext';
 import { useFilteredCardList } from './HomeContext';
 import EmptySpace from '../../shared-components/EmptySpace';
-import { NavigationContext } from 'navigation-react';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const ALL_STATE = 'All';
 const COMPONENT_KEY = 'HomeHeaderComponent';
 
 const HomeHeaderComponent = () => {
   const [selected, setSelected] = useState<string>(ALL_STATE);
-  const { stateNavigator } = useContext(NavigationContext);
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const { appendFilter, removeFilter } = useFilteredCardList();
   const { theme } = useTheme();
 
@@ -25,11 +26,11 @@ const HomeHeaderComponent = () => {
   };
 
   return (
-    <View style={{ ...styles.container, backgroundColor: theme.colors.inverseOnSurface }}>
+    <View style={{ ...styles.container, backgroundColor: theme.colors.card }}>
       {/* <EmptySpace space={20} /> */}
       <View style={styles.row}>
         <Text style={styles.heading} variant="headlineSmall">Your Cards</Text>
-        <IconButton icon="cog" style={styles.button} size={20} onPress={() => stateNavigator.navigate('Settings')} />
+        <IconButton icon="cog" style={styles.button} size={20} onPress={() => navigation.navigate('Settings')} />
       </View>
       <EmptySpace space={5} />
       <View style={styles.chipContainer}>

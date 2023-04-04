@@ -3,6 +3,8 @@ import { CARD_DATA_STORAGE_KEY } from '../data/StorageKeys';
 import { ICard } from '../types/CardInterface';
 import { retrieveData, storeData } from '../utils/utilFunctions';
 
+console.log('data init');
+
 export enum ACTIONS {
   ADD_CARDS = 'add',
   SET_CARDS = 'set',

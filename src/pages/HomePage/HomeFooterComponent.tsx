@@ -1,39 +1,44 @@
-import { StyleSheet, View, TextInput } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
-import { Card, FAB, IconButton, Surface } from 'react-native-paper';
+import { StyleSheet, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FAB, Surface } from 'react-native-paper';
 import { useTheme } from '../../context/ThemeContext';
 import { useFilteredCardList } from './HomeContext';
-import { NavigationContext } from 'navigation-react';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const COMPONENT_KEY = 'HomeFooterComponent';
 
 const HomeFooterComponent = () => {
-  const { stateNavigator } = useContext(NavigationContext);
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const [input, setInput] = useState('');
   const { appendFilter, removeFilter } = useFilteredCardList();
   const { theme } = useTheme();
+  const { bottom } = useSafeAreaInsets();
 
   useEffect(() => {
-    if (!input)
+    const inputText = input.trim();
+    if (!inputText)
       removeFilter(COMPONENT_KEY);
     else
-      appendFilter(COMPONENT_KEY, { bankName: input, cardName: input, cardHolder: input })
+      appendFilter(COMPONENT_KEY, { bankName: inputText, cardName: inputText, cardHolder: inputText })
   }, [input]);
 
   return (
-    <View style={styles.container}>
-      <Card style={styles.surface} elevation={3} >
-        <TextInput
-          value={input}
-          onChangeText={(text) => setInput(text)}
-          placeholder='Search by bank or card name'
-          inputMode='search'
-          placeholderTextColor={theme.dark ? 'white' : 'black'}
-          style={{ fontWeight: 'bold', color: theme.dark ? 'white' : 'black' }}
-        />
-      </Card>
-      <FAB icon="plus" mode='elevated' style={styles.button} customSize={50} onPress={() => stateNavigator.navigate('AddCard')} />
-    </View>
+    <Surface style={{ ...styles.surface, bottom: bottom + 10 }} elevation={3} >
+      <TextInput
+        value={input}
+        onChangeText={(text) => setInput(text)}
+        placeholder='Search by bank or card name'
+        inputMode='search'
+        placeholderTextColor={theme.colors.text}
+        clearButtonMode='always'
+        style={{ maxWidth: 200, color: theme.colors.text }}
+      />
+      <FAB icon={!!input ? 'close' : 'plus'} mode='flat' style={styles.button} customSize={55} onPress={() => {
+        !!input ? setInput('') : navigation.navigate('AddCard')
+      }} />
+    </Surface>
   );
 };
 
@@ -42,25 +47,19 @@ export default HomeFooterComponent;
 const styles = StyleSheet.create({
   surface: {
     borderRadius: 15,
-    flexGrow: 1,
-    paddingHorizontal: 15,
-    // shadowColor: 'transparent'
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    alignContent: 'center',
+    marginHorizontal: 15,
+    paddingLeft: 15,
+    position: 'absolute',
+    bottom: 20,
+    right: 0,
   },
   button: {
     borderRadius: 15,
     margin: 0,
-    marginLeft: 5,
-    // shadowRadius: 0,
-    // shadowColor: 'rgba(0,0,0,1)'
+    marginLeft: 15,
   },
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderColor: 'transparent',
-    position: 'absolute',
-    bottom: 5
-  }
 });

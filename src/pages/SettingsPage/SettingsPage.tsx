@@ -3,6 +3,7 @@ import React from 'react';
 import { Divider } from 'react-native-paper';
 import AppearanceSection from './AppearanceSection';
 import SettingsHeaderComponent from './SettingsHeaderComponent';
+import SettingsFooterComponent from './SettingsFooterComponent';
 
 const SettingsPage = () => {
   return (
@@ -12,6 +13,7 @@ const SettingsPage = () => {
         <AppearanceSection />
         <Divider />
       </ScrollView>
+      {/* <SettingsFooterComponent /> */}
     </View>
   );
 };

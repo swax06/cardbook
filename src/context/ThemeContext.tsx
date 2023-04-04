@@ -7,28 +7,31 @@ import { createMaterial3Theme } from '../lib/MaterialYouLib';
 import { MD3Colors } from 'react-native-paper/lib/typescript/src/types';
 import { createThemeFromSystemSchemes } from '../lib/MaterialYouLib/utils/createMaterial3Theme';
 import { NativeModules } from 'react-native';
+import { DefaultTheme, Theme } from '@react-navigation/native';
+import { Platform } from 'react-native';
+import { ACCENT_COLORS } from '../data/ColorDefinations';
 
-const {SystemColorsModule} = NativeModules;
+const platformConstants: any = Platform.constants;
+const androidVersion = platformConstants['Release'];
 
-
+const {ReactHelperModule} = NativeModules;
 
 const colorSchemes = ['system', 'light', 'dark'] as const;
 export type colorSchemeTypes = typeof colorSchemes[number];
 type appColorSchemeTypes = 'light' | 'dark';
 
 const DEFAULT_COLOR_SCHEME: appColorSchemeTypes = 'light';
-const DEFAULT_ACCENT_COLOR = 'purple';
+const DEFAULT_ACCENT_COLOR = ACCENT_COLORS[0];
 
 export interface IThemeContext {
-  theme: MD3Theme,
+  theme: MD3Theme & Theme,
   accentColor: string,
   colorScheme: colorSchemeTypes,
   setAccentColor: (x: string) => void,
   setColorScheme: (x: colorSchemeTypes) => void
 };
 
-// let systemPallet: any;
-const generateTheme = (colorScheme: appColorSchemeTypes, accentColor: string, systemPallet: any): MD3Theme => {
+const generateTheme = (colorScheme: appColorSchemeTypes, accentColor: string, systemPallet: any): MD3Theme & Theme => {
   const isDarkMode = colorScheme === 'dark';
   let colorDefs;
   if(accentColor === 'system') {
@@ -42,16 +45,16 @@ const generateTheme = (colorScheme: appColorSchemeTypes, accentColor: string, sy
     dark: isDarkMode,
     colors: (isDarkMode ? colorDefs.dark : colorDefs.light) as MD3Colors,
   };
-  // const navTheme = adaptNavigationTheme({ reactNavigationLight: NavigationDefaultTheme, materialLight: paperTheme }).LightTheme;
-  // const combinedTheme = {
-  //   ...navTheme,
-  //   ...paperTheme,
-  //   colors: {
-  //     ...navTheme.colors,
-  //     ...paperTheme.colors,
-  //   },
-  // };
-  return paperTheme;
+  const navTheme = adaptNavigationTheme({ reactNavigationLight: DefaultTheme, materialLight: paperTheme }).LightTheme;
+  const combinedTheme = {
+    ...navTheme,
+    ...paperTheme,
+    colors: {
+      ...navTheme.colors,
+      ...paperTheme.colors,
+    },
+  };
+  return combinedTheme;
 };
 
 const ThemeContext = React.createContext<IThemeContext>(
@@ -73,13 +76,12 @@ export default function ThemeProvider({ children }: any) {
   // const accentcolorRef = useRef<string>(DEFAULT_ACCENT_COLOR);
   // const colorSchemeRef = useRef<'light' | 'dark'>(systemColorScheme ?? DEFAULT_COLOR_SCHEME);
   const [colorScheme, setColorScheme] = useLocalStorage<colorSchemeTypes>(THEME_MODE_STORAGE_KEY, 'system');
-  const [theme, setTheme] = useState<MD3Theme>(() => generateTheme(systemColorScheme ?? DEFAULT_COLOR_SCHEME, DEFAULT_ACCENT_COLOR, systemPallet));
-  const [accentColor, setAccentColor] = useLocalStorage<string>(ACCENT_STORAGE_KEY, 'system');
-  const systemPallet = SystemColorsModule.getSystemColorPalette();
+  const [theme, setTheme] = useState<MD3Theme & Theme>(() => generateTheme(systemColorScheme ?? DEFAULT_COLOR_SCHEME, DEFAULT_ACCENT_COLOR, systemPallet));
+  const [accentColor, setAccentColor] = useLocalStorage<string>(ACCENT_STORAGE_KEY, androidVersion > 11 ? 'system' : DEFAULT_ACCENT_COLOR);
+  const systemPallet = ReactHelperModule.getSystemColorPalette();
 
   useEffect(() => {
     updateTheme();
-    console.log(colorScheme, systemColorScheme, accentColor);
   }, [colorScheme, systemColorScheme, accentColor]);
 
   const updateTheme = () => {

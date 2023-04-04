@@ -1,50 +1,58 @@
 package com.cardbook
 
+//noinspection SuspiciousImport
 import android.R
-import android.graphics.Color
-import android.graphics.ColorSpace
-import android.util.Log
-import androidx.core.content.ContextCompat
-import kotlin.collections.HashMap
 import android.os.Build
+import androidx.core.content.ContextCompat
 import com.facebook.react.bridge.*
-import com.facebook.react.bridge.WritableArray
+import com.cardbook.MainActivity as CardbookMainActivity
 
 
-class SystemColorsModule(val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class ReactHelperModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
-    override fun getName() = "SystemColorsModule"
+    override fun getName() = "ReactHelperModule"
 
     override fun getConstants(): MutableMap<String, Any?> {
-        val constants: MutableMap<String, Any?> = HashMap();
+        val constants: MutableMap<String, Any?> = HashMap()
 
-        constants["isSupported"] = isSupported();
-        constants["initialPalette"] = getSystemColorPalette();
+        constants["isSupported"] = isSupported()
+        constants["initialPalette"] = getSystemColorPalette()
 
-        return constants;
+        return constants
     }
 
     private fun isSupported(): Boolean {
-        return R.color.system_accent1_0 != null;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    }
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    fun removeSplashScreen() {
+        val activity: CardbookMainActivity? = reactContext.currentActivity as CardbookMainActivity?
+        activity?.removeSplashScreen()
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    fun closeApp() {
+        val activity: CardbookMainActivity? = reactContext.currentActivity as CardbookMainActivity?
+        activity?.finishActivity()
     }
 
     @ReactMethod
-    public fun getSystemColorPalettePromise(promise: Promise) {
+    fun getSystemColorPalettePromise(promise: Promise) {
         try {
-            val colors = getSystemColorPalette();
-            promise.resolve(colors);
+            val colors = getSystemColorPalette()
+            promise.resolve(colors)
         } catch(e: Exception) {
-            print(e);
-            promise.reject("Create return palette", e);
+            print(e)
+            promise.reject("Create return palette", e)
         }
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    fun getSystemColorPalette(): WritableMap? {
+    fun getSystemColorPalette(): WritableMap {
         val palette: WritableMap = WritableNativeMap()
 
-        if(isSupported() != true) {
-            return palette;
+        if(!isSupported()) {
+            return palette
         }
 
         val lightPalette: WritableMap = WritableNativeMap()
@@ -116,15 +124,15 @@ class SystemColorsModule(val reactContext: ReactApplicationContext) : ReactConte
     }
 
     private fun colorToHex(c: Int?): String {
-        if(c == null || c !is Int) {
+        if(c == null) {
             return "#00000000"
         }
-        val hex = getColor(c);
+        val hex = getColor(c)
 
-        return java.lang.String.format("#%06X", 0xFFFFFF and hex);
+        return java.lang.String.format("#%06X", 0xFFFFFF and hex)
     }
 
-    fun getColor(id: Int): Int {
+    private fun getColor(id: Int): Int {
         return ContextCompat.getColor(reactContext, id)
     }
 }

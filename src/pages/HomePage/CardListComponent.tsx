@@ -1,32 +1,34 @@
-import { PixelRatio, StyleSheet, View } from 'react-native';
-import React, { useContext } from 'react';
-import CardComponent from '../../shared-components/CardComponent';
-import { FAB } from 'react-native-paper';
+import { PixelRatio, StyleSheet, useWindowDimensions, View } from 'react-native';
+import React, { useState } from 'react';
+import { FAB, Text } from 'react-native-paper';
 import { useFilteredCardList } from './HomeContext';
 import { ACTIONS, useAppData } from '../../context/AppDataContext';
-import { SharedElement } from 'navigation-react-native';
-import { NavigationContext } from 'navigation-react';
-import { ICard } from '../../types/CardInterface';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import CardComponent from '../../shared-components/CardComponent';
 
 const CardListComponent = () => {
     const { filteredCardList } = useFilteredCardList()
-    // const navigation = useNavigation<NativeStackNavigationProp<any>>();
-    const { stateNavigator } = useContext(NavigationContext);
-    const {updateCardList} = useAppData();
-    
+    const navigation = useNavigation<NativeStackNavigationProp<any>>();
+    const { width } = useWindowDimensions();
+    const { updateCardList } = useAppData();
+    const scale = 1075 / width;
     return (
         <View>
             {filteredCardList.map(x => (
                 <View key={x.id}>
                     <View style={styles.card}>
-                        <SharedElement name={x.id}>
-                            <CardComponent card={x} />
-                        </SharedElement>
+                        <CardComponent card={x} />
                     </View>
-                    <FAB style={styles.fab} icon="pencil-outline" mode='flat' variant='surface' customSize={80 / PixelRatio.get()} onPress={() => stateNavigator.navigate('AddCard', x)}  />
-                    <FAB style={{ ...styles.fab, right: '14%' }} icon="delete-outline" mode='flat' variant='surface' customSize={80 / PixelRatio.get()} onPress={() => updateCardList({type: ACTIONS.DELETE_CARDS, payload: x})} />
+                    <FAB style={styles.fab} icon="pencil-outline" mode='flat' variant='surface' customSize={80 / scale} onPress={() => navigation.navigate('AddCard', { card: x })} />
+                    <FAB style={{ ...styles.fab, right: '14%' }} icon="delete-outline" mode='flat' variant='surface' customSize={80 / scale} onPress={() => updateCardList({ type: ACTIONS.DELETE_CARDS, payload: x })} />
                 </View>
             ))}
+            {filteredCardList.length === 0 &&
+                <View style={styles.message}>
+                    <Text variant='titleMedium' style={{ fontWeight: 'bold' }} children={'No Cards'}></Text>
+                </View>
+            }
         </View>
     );
 };
@@ -40,6 +42,12 @@ const styles = StyleSheet.create({
     fab: {
         position: 'absolute',
         right: '5%',
-        top: '25%',
+        top: '37%',
     },
+    message: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop: 300
+    }
 });
