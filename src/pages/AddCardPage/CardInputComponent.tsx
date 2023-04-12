@@ -197,7 +197,7 @@ const CardInputComponent = () => {
                 </View>
             </View>
             <Text style={styles.label} children={'Card Colors'} />
-            <ColorPicker colorList={CARD_COLORS} initColor={cardInput.cardColor} onChangeColor={(x) => updateCard({ cardColor: x })} />
+            <ColorPicker colorList={CARD_COLORS} initColor={cardInput.cardColor} style={{ borderRadius: 5, borderWidth: 1 }} onChangeColor={(x) => updateCard({ cardColor: x })} />
         </View>
     );
 };

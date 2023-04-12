@@ -1,16 +1,15 @@
 import { Platform, StyleSheet, View } from 'react-native';
 import React from 'react';
-import { IconButton, SegmentedButtons, Text } from 'react-native-paper';
+import { Checkbox, IconButton, SegmentedButtons, Text } from 'react-native-paper';
 import { colorSchemeTypes, useTheme } from '../../context/ThemeContext';
 import ColorPicker from '../../shared-components/ColorPicker';
 import { ACCENT_COLORS } from '../../data/ColorDefinations';
 import EmptySpace from '../../shared-components/EmptySpace';
 
-const platformConstants: any = Platform.constants;
-const androidVersion = platformConstants['Release'];
+const radius = 22;
 
 const AppearanceSection = () => {
-    const { theme, accentColor, colorScheme, setAccentColor, setColorScheme } = useTheme();
+    const { theme, accentColor, colorScheme, setAccentColor, setColorScheme, systemPallet } = useTheme();
     return (
         <View style={styles.container}>
             <Text variant="titleSmall" style={{color: theme.colors.primary, ...styles.heading}}>Appearance</Text>
@@ -42,15 +41,22 @@ const AppearanceSection = () => {
             </View>
             <Text variant="titleLarge" style={styles.subHeading}>Accent Color</Text>
             <View style={styles.content}>
-                {androidVersion > 11 && 
+                {Number(Platform.Version) > 30 && 
                 <>
                 <View style={styles.row}>
+                    <View style={{ borderRadius: 100, marginHorizontal: 7 }}>
+                        <View style={{backgroundColor: systemPallet.dark.primary, height: radius, width: 2 * radius, borderTopStartRadius: 100, borderTopEndRadius: 100 }}></View>
+                        <View style={styles.row}>
+                        <View style={{backgroundColor: systemPallet.dark.tertiary, height: radius, width: radius, borderBottomStartRadius: 100 }}></View>
+                        <View style={{backgroundColor: systemPallet.dark.inversePrimary, height: radius, width: radius, borderBottomEndRadius: 100 }}></View>
+                        </View>
+                    </View>
                     <IconButton
-                        icon={accentColor === 'system' ? "check-circle-outline" : 'blank'}
-                        iconColor='#ffffff88'
+                        icon={accentColor === 'system' ? "check-circle" : 'blank'}
+                        iconColor={'#ffffffee'}
                         size={30}
-                        style={{ borderRadius: 100, marginVertical: 0 }}
-                        containerColor={'blue'}
+                        style={{ borderRadius: 100, position: 'absolute', left: 0 }}
+                        containerColor={'transparent'}
                         animated={true}
                         mode='contained'
                         onPress={() => setAccentColor('system')} />
@@ -58,7 +64,7 @@ const AppearanceSection = () => {
                 </View>
                 <EmptySpace space={4}/>
                 </>}
-                <ColorPicker colorList={ACCENT_COLORS} initColor={accentColor} size={25} borderRadius={100} onChangeColor={(color) => setAccentColor(color)} />
+                <ColorPicker colorList={ACCENT_COLORS} initColor={accentColor} size={25} onChangeColor={(color) => setAccentColor(color)} />
             </View>
         </View>
     );

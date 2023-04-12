@@ -1,26 +1,30 @@
 import { StyleSheet, View } from 'react-native';
 import React from 'react';
 import { IconButton } from 'react-native-paper';
+import { useTheme } from '../context/ThemeContext';
+import color from 'color';
 
-const ColorPicker = ({ colorList = ['blue'], initColor = 'blue', onChangeColor = (x: string) => { }, size = 30, borderRadius = 5 }) => {
+const ColorPicker = ({ colorList = ['blue'], initColor = 'blue', onChangeColor = (x: string) => { }, size = 30, style = { borderRadius: 100, borderWidth: 0 } }) => {
+    const { theme } = useTheme();
     return (
         <View style={styles.container}>
             <View style={styles.colorPicker}>
                 {colorList.map((x) => (
-                    <IconButton
-                        key={x}
-                        icon={initColor === x ? "check-circle-outline" : 'blank'}
-                        iconColor='#ffffff88'
-                        size={size}
-                        style={{ borderRadius: borderRadius }}
-                        containerColor={x}
-                        animated={true}
-                        mode='contained'
-                        onPress={() => onChangeColor(x)} />
+                    <View key={x} style={{ flexBasis: '16.6%', alignItems: 'center' }}>
+                        <IconButton
+                            icon={initColor === x ? "check-circle" : 'blank'}
+                            iconColor={color(x).isDark() ? '#ffffff99' : '#00000099'}
+                            size={size}
+                            style={style}
+                            containerColor={x}
+                            animated={true}
+                            mode='contained'
+                            onPress={() => onChangeColor(x)} />
+                    </View>
                 ))}
             </View>
         </View>
-    )
+    );
 };
 
 export default ColorPicker;
@@ -30,10 +34,9 @@ const styles = StyleSheet.create({
         flex: 1
     },
     colorPicker: {
-        flex: 1,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-evenly'
+        justifyContent: 'flex-start',
     },
     label: {
         padding: 10

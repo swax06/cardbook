@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
 import { Chip, IconButton, Text } from 'react-native-paper';
 import { cardTypes, cardTypeValues } from '../../types/CardInterface';
@@ -33,11 +33,12 @@ const HomeHeaderComponent = () => {
         <IconButton icon="cog" style={styles.button} size={20} onPress={() => navigation.navigate('Settings')} />
       </View>
       <EmptySpace space={5} />
-      <View style={styles.chipContainer}>
+      <ScrollView style={styles.chipContainer} horizontal={true} showsHorizontalScrollIndicator={false}>
         {[ALL_STATE, ...cardTypeValues].map(x => (
           <Chip
+            // compact={true}
             mode={selected === x ? 'flat' : 'outlined'}
-            textStyle={{ fontWeight: 'bold', ...(selected === x ? { color: theme.colors.onSurface } : {}) }}
+            textStyle={{ fontWeight: 'bold',  ...(selected === x ? { color: theme.colors.onSurface } : {}) }}
             style={{ margin: selected === x ? 6 : 5 }}
             onPress={() => handleSelect(x as cardTypes)}
             key={x}
@@ -45,7 +46,7 @@ const HomeHeaderComponent = () => {
             {x}
           </Chip>
         ))}
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -61,8 +62,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   },
   chipContainer: {
-    flexDirection: 'row',
-    alignItems: 'center'
+    flexDirection: 'row'
   },
   button: {
     borderRadius: 100,

@@ -4,7 +4,7 @@ import { CARD_COLORS } from '../data/ColorDefinations';
 import { ICard } from '../types/CardInterface';
 
 export const removeCardNumberSpaces = (cardNumber: string) => {
-    return cardNumber.replace(' ', '');
+    return cardNumber.replace(/ /g, '');
 }
 
 export async function retrieveData(storageKey: string): Promise<any> {

@@ -11,9 +11,6 @@ import { DefaultTheme, Theme } from '@react-navigation/native';
 import { Platform } from 'react-native';
 import { ACCENT_COLORS } from '../data/ColorDefinations';
 
-const platformConstants: any = Platform.constants;
-const androidVersion = platformConstants['Release'];
-
 const {ReactHelperModule} = NativeModules;
 
 const colorSchemes = ['system', 'light', 'dark'] as const;
@@ -28,7 +25,8 @@ export interface IThemeContext {
   accentColor: string,
   colorScheme: colorSchemeTypes,
   setAccentColor: (x: string) => void,
-  setColorScheme: (x: colorSchemeTypes) => void
+  setColorScheme: (x: colorSchemeTypes) => void,
+  systemPallet: any
 };
 
 const generateTheme = (colorScheme: appColorSchemeTypes, accentColor: string, systemPallet: any): MD3Theme & Theme => {
@@ -63,7 +61,8 @@ const ThemeContext = React.createContext<IThemeContext>(
       accentColor: DEFAULT_ACCENT_COLOR,
       colorScheme: DEFAULT_COLOR_SCHEME,
       setAccentColor: (x) => { },
-      setColorScheme: (x) => { } 
+      setColorScheme: (x) => { },
+      systemPallet: {}
     }
   );
 
@@ -77,7 +76,7 @@ export default function ThemeProvider({ children }: any) {
   // const colorSchemeRef = useRef<'light' | 'dark'>(systemColorScheme ?? DEFAULT_COLOR_SCHEME);
   const [colorScheme, setColorScheme] = useLocalStorage<colorSchemeTypes>(THEME_MODE_STORAGE_KEY, 'system');
   const [theme, setTheme] = useState<MD3Theme & Theme>(() => generateTheme(systemColorScheme ?? DEFAULT_COLOR_SCHEME, DEFAULT_ACCENT_COLOR, systemPallet));
-  const [accentColor, setAccentColor] = useLocalStorage<string>(ACCENT_STORAGE_KEY, androidVersion > 11 ? 'system' : DEFAULT_ACCENT_COLOR);
+  const [accentColor, setAccentColor] = useLocalStorage<string>(ACCENT_STORAGE_KEY, Number(Platform.Version) > 30 ? 'system' : DEFAULT_ACCENT_COLOR);
   const systemPallet = ReactHelperModule.getSystemColorPalette();
 
   useEffect(() => {
@@ -96,7 +95,7 @@ export default function ThemeProvider({ children }: any) {
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, accentColor, colorScheme, setAccentColor, setColorScheme }}>
+    <ThemeContext.Provider value={{ theme, accentColor, colorScheme, setAccentColor, setColorScheme, systemPallet }}>
       {children}
     </ThemeContext.Provider>
   );

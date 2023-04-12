@@ -20,7 +20,7 @@ export default function CardFrontComponent({ card, copySupport = false }: { card
   }, [card.cardNumber]);
 
   useEffect(() => {
-    if (color(card.cardColor).luminosity() > 0.260) {
+    if (color(card.cardColor).luminosity() > 0.270) {
       setTextColor(CARD_DARK_FONT_COLOR);
     } else {
       setTextColor(CARD_LIGHT_FONT_COLOR);
@@ -59,10 +59,10 @@ export default function CardFrontComponent({ card, copySupport = false }: { card
             <Text allowFontScaling={false} style={{ ...styles.cardHolder, color: textColor }} numberOfLines={1}>{card.cardHolder.trim().toUpperCase()}</Text>
           </TouchableWithoutFeedback>
         </View>
-        <Image
+        { cardProcessor[0].processor !== 'default' && <Image
           style={styles.logo}
           source={cardProcessor[0].logoFilled}
-        />
+        />}
       </View>
       <Text style={{ ...styles.cardType, color: textColor }}>{!!card.cardType && `${card.cardType} Card`}</Text>
     </View>
@@ -81,7 +81,8 @@ const createStyles = (scaleFactor: number) => StyleSheet.create({
   },
   cardHolder: {
     fontSize: 45 / scaleFactor,
-    maxWidth: 600 / scaleFactor
+    maxWidth: 600 / scaleFactor,
+    marginRight: 'auto'
   },
   cardNumber: {
     // alignSelf:'center'
@@ -89,7 +90,8 @@ const createStyles = (scaleFactor: number) => StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginRight: '1%'
   },
   chip: {
     width: 111 / scaleFactor,
@@ -146,7 +148,8 @@ const createStyles = (scaleFactor: number) => StyleSheet.create({
     fontSize: 50 / scaleFactor
   },
   largeText: {
-    fontSize: 64 / scaleFactor
+    fontSize: 64 / scaleFactor,
+    marginRight: 'auto'
   },
 });
 

@@ -10,19 +10,10 @@ const HomePage = () => {
   return (
     <HomeProvider>
         <HomeHeaderComponent />
-        <ScrollView style={styles.cardList}>
-          <CardListComponent />
-          <EmptySpace space={'15%'} />
-        </ScrollView>
+        <CardListComponent />
         <HomeFooterComponent />
     </HomeProvider>
   );
 };
 
 export default HomePage;
-
-const styles = StyleSheet.create({
-  cardList: {
-    paddingHorizontal: '4%'
-  }
-});
