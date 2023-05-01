@@ -51,13 +51,13 @@ const AddCardFooterComponent = () => {
                 {msg}
             </Snackbar>
             <View style={{ ...styles.container, bottom: bottom + 10 }}>
-                <FAB icon="check" mode='elevated' style={styles.button} customSize={55} onPress={() => {
+                <FAB icon='check' mode='elevated' style={styles.button} customSize={55} onPress={() => {
                     if (cardDataValid()) {
                         if (pageMode === PAGE_MODE.EDIT)
-                            updateCardList({ type: ACTIONS.MODIFY_CARDS, payload: cardInput });
+                            updateCardList({ type: ACTIONS.MODIFY_CARDS, payload: [cardInput] });
 
                         else
-                            updateCardList({ type: ACTIONS.ADD_CARDS, payload: cardInput });
+                            updateCardList({ type: ACTIONS.ADD_CARDS, payload: [cardInput] });
                         navigation.goBack();
                     }
                 }} />

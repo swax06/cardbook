@@ -2,7 +2,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
 
     <application
       android:name=".MainApplication"
@@ -18,6 +17,7 @@
         android:launchMode="singleTask"
         android:theme="@style/SplashTheme"
         android:windowSoftInputMode="adjustResize"
+        android:screenOrientation="portrait"
         android:exported="true">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />

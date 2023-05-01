@@ -2,13 +2,13 @@ import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native'
 import React, { useState } from 'react'
 import CardBackComponent from '../../shared-components/CardBackComponent';
 import CardFrontComponent from '../../shared-components/CardFrontComponent';
-import { trigger } from "react-native-haptic-feedback";
+import { trigger } from 'react-native-haptic-feedback';
 import { ICard } from '../../types/CardInterface';
 import Animated, { Extrapolate, interpolate, runOnJS, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import {
     PanGestureHandler,
     PanGestureHandlerGestureEvent
-} from "react-native-gesture-handler";
+} from 'react-native-gesture-handler';
 import { Button, FAB, Modal, Portal, Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -44,12 +44,12 @@ const CardComponent = ({ card }: { card: ICard }) => {
             itemTranslateX.value = e.translationX < 0 ? e.translationX : 0;
             if (!context.inDismissArea && itemTranslateX.value < TRANSLATEX_THRESHOLD) {
                 context.inDismissArea = true;
-                runOnJS(trigger)("impactLight", options);
+                runOnJS(trigger)('impactLight', options);
                 pillOpacity.value = 0;
             }
             if (context.inDismissArea && itemTranslateX.value > TRANSLATEX_THRESHOLD) {
                 context.inDismissArea = false;
-                runOnJS(trigger)("impactLight", options);
+                runOnJS(trigger)('impactLight', options);
                 pillOpacity.value = 1;
             }
         },
@@ -89,27 +89,28 @@ const CardComponent = ({ card }: { card: ICard }) => {
         right: 0,
         marginTop: itemMarginTop.value,
         borderRadius: 15,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: '#F75D59'
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: theme.colors.errorContainer,
     }));
 
     const pillIconStyle = useAnimatedStyle(() => ({
         height: 5,
         width: 20,
-        backgroundColor: "white",
+        backgroundColor: theme.colors.text,
         opacity: pillOpacity.value,
-        transform: [{ scale: interpolate(-itemTranslateX.value < HEIGHT ? -itemTranslateX.value : (2 * -itemTranslateX.value) - HEIGHT,
-            [20, 30],
-            [0.01, 1],
-            Extrapolate.CLAMP) 
+        transform: [{
+            scale: interpolate(-itemTranslateX.value < HEIGHT ? -itemTranslateX.value : (2 * -itemTranslateX.value) - HEIGHT,
+                [20, 30],
+                [0.01, 1],
+                Extrapolate.CLAMP)
         }],
     }));
 
     const removeTextStyle = useAnimatedStyle(() => ({
         ...StyleSheet.absoluteFillObject,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         opacity: 1 - pillOpacity.value,
     }));
 
@@ -118,12 +119,12 @@ const CardComponent = ({ card }: { card: ICard }) => {
             <Animated.View style={actionStyle}>
                 <Animated.View style={pillIconStyle} />
                 <Animated.View style={removeTextStyle}>
-                    <Text style={styles.removeText}>Delete</Text>
+                    <Text style={[styles.removeText]}>Delete</Text>
                 </Animated.View>
             </Animated.View>
             <PanGestureHandler onGestureEvent={panGesture} activeOffsetX={[-50, SCREEN_WIDTH]} activeOffsetY={[-9999, 9999]}>
                 <Animated.View style={cardStyle}>
-                    <Pressable onLongPress={() => { setShowCardBack(true); trigger("impactLight", options) }} onPressOut={() => { setShowCardBack(false) }}>
+                    <Pressable onLongPress={() => { setShowCardBack(true); trigger('impactLight', options) }} onPressOut={() => { setShowCardBack(false) }}>
                         {!showCardBack &&
                             <>
                                 <CardFrontComponent card={card} copySupport={true} />
@@ -139,7 +140,7 @@ const CardComponent = ({ card }: { card: ICard }) => {
                     <Text variant='titleMedium'>Delete this card?</Text>
                     <View style={styles.modalFooter}>
                         <Button children={'Cancel'} onPress={() => handleCancelDelete()} />
-                        <Button children={'Delete'} onPress={() => updateCardList({ type: ACTIONS.DELETE_CARDS, payload: card })} />
+                        <Button children={'Delete'} onPress={() => updateCardList({ type: ACTIONS.DELETE_CARDS, payload: [card] })} />
                     </View>
                 </Modal>
             </Portal>
@@ -166,7 +167,6 @@ const styles = StyleSheet.create({
     },
     removeText: {
         fontWeight: 'bold',
-        color: 'white'
     },
     editBtn: {
         position: 'absolute',

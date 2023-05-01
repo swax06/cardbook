@@ -10,17 +10,16 @@ const ColorPicker = ({ colorList = ['blue'], initColor = 'blue', onChangeColor =
         <View style={styles.container}>
             <View style={styles.colorPicker}>
                 {colorList.map((x) => (
-                    <View key={x} style={{ flexBasis: '16.6%', alignItems: 'center' }}>
-                        <IconButton
-                            icon={initColor === x ? "check-circle" : 'blank'}
-                            iconColor={color(x).isDark() ? '#ffffff99' : '#00000099'}
-                            size={size}
-                            style={style}
-                            containerColor={x}
-                            animated={true}
-                            mode='contained'
-                            onPress={() => onChangeColor(x)} />
-                    </View>
+                    <IconButton
+                        key={x}
+                        icon={initColor === x ? 'check-circle' : undefined}
+                        iconColor={color(x).isDark() ? '#ffffff99' : '#00000099'}
+                        size={size}
+                        style={style}
+                        containerColor={x}
+                        animated={true}
+                        mode='contained'
+                        onPress={() => onChangeColor(x)} />
                 ))}
             </View>
         </View>
@@ -34,9 +33,9 @@ const styles = StyleSheet.create({
         flex: 1
     },
     colorPicker: {
-        flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'flex-start',
+        flexDirection: 'row',
+        justifyContent: 'center',
     },
     label: {
         padding: 10

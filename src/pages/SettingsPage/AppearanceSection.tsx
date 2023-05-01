@@ -12,8 +12,8 @@ const AppearanceSection = () => {
     const { theme, accentColor, colorScheme, setAccentColor, setColorScheme, systemPallet } = useTheme();
     return (
         <View style={styles.container}>
-            <Text variant="titleSmall" style={{color: theme.colors.primary, ...styles.heading}}>Appearance</Text>
-            <Text variant="titleLarge" style={styles.subHeading}>Color Scheme</Text>
+            <Text variant='titleSmall' style={{color: theme.colors.primary, ...styles.heading}}>Appearance</Text>
+            <Text variant='titleLarge' style={styles.subHeading}>Color scheme</Text>
             <View style={styles.content}>
                 <SegmentedButtons
                     value={colorScheme}
@@ -39,7 +39,7 @@ const AppearanceSection = () => {
                     ]}
                 />
             </View>
-            <Text variant="titleLarge" style={styles.subHeading}>Accent Color</Text>
+            <Text variant='titleLarge' style={styles.subHeading}>Accent color</Text>
             <View style={styles.content}>
                 {Number(Platform.Version) > 30 && 
                 <>
@@ -52,7 +52,7 @@ const AppearanceSection = () => {
                         </View>
                     </View>
                     <IconButton
-                        icon={accentColor === 'system' ? "check-circle" : 'blank'}
+                        icon={accentColor === 'system' ? 'check-circle' : undefined}
                         iconColor={'#ffffffee'}
                         size={30}
                         style={{ borderRadius: 100, position: 'absolute', left: 0 }}

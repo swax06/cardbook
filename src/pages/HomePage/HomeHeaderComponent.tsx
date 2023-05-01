@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, ToastAndroid, View } from 'react-native';
 import React, { useState } from 'react';
 import { Chip, IconButton, Text } from 'react-native-paper';
 import { cardTypes, cardTypeValues } from '../../types/CardInterface';
@@ -7,6 +7,8 @@ import { useFilteredCardList } from './HomeContext';
 import EmptySpace from '../../shared-components/EmptySpace';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAppDataSync } from '../../context/AppDataContext';
+import { useAppPreference } from '../../context/AppPreferenceContext';
 
 const ALL_STATE = 'All';
 const COMPONENT_KEY = 'HomeHeaderComponent';
@@ -16,6 +18,8 @@ const HomeHeaderComponent = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const { appendFilter, removeFilter } = useFilteredCardList();
   const { theme } = useTheme();
+  const { pendingUpload, pendingDownload } = useAppDataSync();
+  const { cloudBackupEnabled } = useAppPreference();
 
   const handleSelect = (x: 'All' | cardTypes) => {
     setSelected(x);
@@ -25,12 +29,44 @@ const HomeHeaderComponent = () => {
       appendFilter(COMPONENT_KEY, { cardType: x });
   };
 
+  const getSyncIcon = () => {
+    if (cloudBackupEnabled) {
+      if (pendingDownload || pendingUpload)
+        return 'sync-alert';
+      else
+        return 'sync';
+    }
+    else
+      return 'sync-off';
+  }
+
+  const showToast = () => {
+    let msg = '';
+    if (cloudBackupEnabled) {
+      if (pendingDownload || pendingUpload)
+        msg = 'syncing data';
+      else
+        msg = 'sync complete';
+    }
+    else
+      msg = 'sync disabled';
+    ToastAndroid.showWithGravity(
+      msg,
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER,
+    );
+  }
+
   return (
     <View style={{ ...styles.container, backgroundColor: theme.colors.card }}>
       {/* <EmptySpace space={20} /> */}
       <View style={styles.row}>
         <Text style={styles.heading} variant="headlineSmall">Your Cards</Text>
-        <IconButton icon="cog" style={styles.button} size={20} onPress={() => navigation.navigate('Settings')} />
+        <View style={styles.headingButtons}>
+          <IconButton icon={getSyncIcon()} style={styles.button} size={20} onPress={() => showToast()} />
+          <IconButton icon="cog-outline" style={styles.button} size={20} onPress={() => navigation.navigate('Settings')} />
+        </View>
+
       </View>
       <EmptySpace space={5} />
       <ScrollView style={styles.chipContainer} horizontal={true} showsHorizontalScrollIndicator={false}>
@@ -38,7 +74,7 @@ const HomeHeaderComponent = () => {
           <Chip
             // compact={true}
             mode={selected === x ? 'flat' : 'outlined'}
-            textStyle={{ fontWeight: 'bold',  ...(selected === x ? { color: theme.colors.onSurface } : {}) }}
+            textStyle={{ fontWeight: 'bold', ...(selected === x ? { color: theme.colors.onSurface } : {}) }}
             style={{ margin: selected === x ? 6 : 5 }}
             onPress={() => handleSelect(x as cardTypes)}
             key={x}
@@ -66,10 +102,16 @@ const styles = StyleSheet.create({
   },
   button: {
     borderRadius: 100,
+    marginHorizontal: 0
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
+  },
+  headingButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start'
   }
 });

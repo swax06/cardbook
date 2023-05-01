@@ -1,9 +1,11 @@
-import React, { createContext, useContext, useEffect, useReducer } from 'react';
-import { CARD_DATA_STORAGE_KEY } from '../data/StorageKeys';
+import React, { createContext, useContext, useEffect, useReducer, useRef } from 'react';
+import { CARD_DATA_CLOUD_STORAGE_KEY, CARD_DATA_STORAGE_KEY } from '../data/StorageKeys';
 import { ICard } from '../types/CardInterface';
 import { retrieveData, storeData } from '../utils/utilFunctions';
-
-console.log('data init');
+import useLocalStorage from '../hooks/useLocalStorage';
+import { downloadData, uploadData } from '../services/DataSyncService';
+import { useAppPreference } from './AppPreferenceContext';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 export enum ACTIONS {
   ADD_CARDS = 'add',
@@ -12,22 +14,25 @@ export enum ACTIONS {
   DELETE_CARDS = 'delete',
 };
 
-const AppDataContext = createContext<{ cardList: ICard[], updateCardList: ({ type, payload }: { type: ACTIONS, payload: ICard }) => void }>({ cardList: [], updateCardList: () => { } });
-
+const AppDataContext = createContext<{ cardList: ICard[], updateCardList: ({ type, payload }: { type: ACTIONS, payload: ICard[] }) => void }>({ cardList: [], updateCardList: () => { } });
+const AppDataSyncContext = createContext<{ pendingDownload: boolean, setPendingDownload: (s: boolean) => void, pendingUpload: boolean }>({ pendingDownload: false, setPendingDownload: () => { }, pendingUpload: false });
 export const useAppData = () => {
   return useContext(AppDataContext);
 };
 
-const reduce = (state: ICard[], { type, payload }: { type: ACTIONS, payload: ICard | ICard[] }) => {
-  if (!(payload instanceof Array)) {
-    payload = [payload];
-  }
+export const useAppDataSync = () => {
+  return useContext(AppDataSyncContext);
+}
+
+const reduce = (state: ICard[], { type, payload }: { type: ACTIONS, payload: ICard[] }) => {
   switch (type) {
     case ACTIONS.SET_CARDS:
       return payload;
 
     case ACTIONS.ADD_CARDS:
-      return [...state, ...payload];
+      let stateIdSet = new Set(state.map(x => x.id));
+      let filteredPayload = payload.filter(x => !stateIdSet.has(x.id));
+      return [...state, ...filteredPayload];
 
     case ACTIONS.MODIFY_CARDS:
       let payloadMap = new Map(payload.map(x => [x.id, x]));
@@ -45,25 +50,56 @@ const reduce = (state: ICard[], { type, payload }: { type: ACTIONS, payload: ICa
 
 export default function AppDataProvider({ children }: { children: any }) {
   const [cardList, dispatch] = useReducer(reduce, []);
+  const [pendingDownload, setPendingDownload] = useLocalStorage('pending-download-key', false);
+  const [pendingUpload, setPendingUpload] = useLocalStorage('pending-upload-key', false);
+  const { cloudBackupEnabled, setCloudBackupEnabled } = useAppPreference();
+  const isFirstRun = useRef(true);
+  const netInfo = useNetInfo();
 
-  const updateCardList = (action: { type: ACTIONS, payload: ICard }) => {
+  const updateCardList = (action: { type: ACTIONS, payload: ICard[] }) => {
     dispatch(action);
   };
 
   useEffect(() => {
     retrieveData(CARD_DATA_STORAGE_KEY).then((x) => {
-      if(x !== null) dispatch({ type: ACTIONS.SET_CARDS, payload: x })
+      if (x !== null) dispatch({ type: ACTIONS.SET_CARDS, payload: x })
     });
   }, []);
 
   useEffect(() => {
-    storeData(CARD_DATA_STORAGE_KEY, cardList);
+    if (!isFirstRun.current) {
+      storeData(CARD_DATA_STORAGE_KEY, cardList);
+      setPendingUpload(true);
+    }
+    isFirstRun.current = false;
   }, [cardList]);
 
+  useEffect(() => {
+    (async () => {
+      if (cloudBackupEnabled && pendingUpload && !pendingDownload && netInfo.isInternetReachable) {
+        let success = await uploadData(CARD_DATA_CLOUD_STORAGE_KEY, cardList);
+        setPendingUpload(!success);
+      }
+    })();
+  }, [pendingUpload, pendingDownload, cloudBackupEnabled, netInfo.isInternetReachable]);
+
+  useEffect(() => {
+    (async () => {
+      if (cloudBackupEnabled && pendingDownload && netInfo.isInternetReachable) {
+        let data = await downloadData(CARD_DATA_CLOUD_STORAGE_KEY);
+        if (data !== null && Array.isArray(data))
+          dispatch({ type: ACTIONS.ADD_CARDS, payload: data });
+        if (data !== undefined)
+          setPendingDownload(false);
+      }
+    })();
+  }, [pendingDownload, cloudBackupEnabled, netInfo.isInternetReachable]);
 
   return (
     <AppDataContext.Provider value={{ cardList, updateCardList }}>
-      {children}
+      <AppDataSyncContext.Provider value={{ pendingDownload, setPendingDownload, pendingUpload }}>
+        {children}
+      </AppDataSyncContext.Provider>
     </AppDataContext.Provider>
   );
 };

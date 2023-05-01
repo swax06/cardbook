@@ -1,9 +1,12 @@
 import { StyleSheet, View, ScrollView } from 'react-native';
 import React from 'react';
-import { Divider } from 'react-native-paper';
 import AppearanceSection from './AppearanceSection';
 import SettingsHeaderComponent from './SettingsHeaderComponent';
 import SettingsFooterComponent from './SettingsFooterComponent';
+import SecuritySection from './SecuritySection';
+import DataSection from './DataSection';
+import EmptySpace from '../../shared-components/EmptySpace';
+import AboutSection from './AboutSection';
 
 const SettingsPage = () => {
   return (
@@ -11,7 +14,10 @@ const SettingsPage = () => {
       <SettingsHeaderComponent />
       <ScrollView style={styles.content}>
         <AppearanceSection />
-        <Divider />
+        <SecuritySection />
+        <DataSection />
+        <AboutSection />
+        <EmptySpace space={50}/>
       </ScrollView>
       {/* <SettingsFooterComponent /> */}
     </View>

@@ -28,20 +28,20 @@ const HomeFooterComponent = () => {
   const containerStyle = useAnimatedStyle(() => ({
     position: 'absolute',
     right: 0,
-    bottom: withTiming(bottom + 20, { duration: 100 }),
+    bottom: withTiming(bottom + 20, { duration: 150 }),
   }), [bottom]);
 
   return (
     <Animated.View style={containerStyle}>
-      <Surface style={styles.surface} elevation={3} >
+      <Surface style={styles.surface} elevation={3}>
         <TextInput
           value={input}
           onChangeText={(text) => setInput(text)}
           placeholder='Search by bank or card name'
           inputMode='search'
           placeholderTextColor={theme.colors.text}
-          clearButtonMode='always'
-          style={{ maxWidth: 200, color: theme.colors.text }}
+          numberOfLines={1}
+          style={{ maxWidth: 210, color: theme.colors.text }}
         />
         <FAB icon={!!input ? 'close' : 'plus'} mode='flat' style={styles.button} customSize={55} onPress={() => {
           !!input ? setInput('') : navigation.navigate('AddCard')
@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
   surface: {
     borderRadius: 15,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     alignContent: 'center',
     marginHorizontal: 15,

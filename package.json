@@ -1,6 +1,6 @@
 {
   "name": "cardbook",
-  "version": "0.0.1",
+  "version": "1.0-beta",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -12,14 +12,17 @@
   "dependencies": {
     "@material/material-color-utilities": "^0.2.4",
     "@react-native-clipboard/clipboard": "^1.11.2",
+    "@react-native-community/netinfo": "^9.3.9",
+    "@react-native-google-signin/google-signin": "^9.0.2",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
+    "@robinbobin/react-native-google-drive-api-wrapper": "^1.2.3",
     "color": "^4.2.3",
     "react": "18.2.0",
     "react-native": "0.71.4",
     "react-native-encrypted-storage": "^4.0.3",
     "react-native-gesture-handler": "^2.9.0",
-    "react-native-haptic-feedback": "^2.0.2",
+    "react-native-haptic-feedback": "^2.0.3",
     "react-native-paper": "^5.5.1",
     "react-native-paper-dropdown": "^1.0.7",
     "react-native-reanimated": "^3.0.2",
