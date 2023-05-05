@@ -44,7 +44,7 @@ const HomeHeaderComponent = () => {
     let msg = '';
     if (cloudBackupEnabled) {
       if (pendingDownload || pendingUpload)
-        msg = 'syncing data';
+        msg = 'sync pending';
       else
         msg = 'sync complete';
     }
@@ -59,11 +59,10 @@ const HomeHeaderComponent = () => {
 
   return (
     <View style={{ ...styles.container, backgroundColor: theme.colors.card }}>
-      {/* <EmptySpace space={20} /> */}
       <View style={styles.row}>
         <Text style={styles.heading} variant="headlineSmall">Your Cards</Text>
         <View style={styles.headingButtons}>
-          <IconButton icon={getSyncIcon()} style={styles.button} size={20} onPress={() => showToast()} />
+          <IconButton animated={true} icon={getSyncIcon()} style={styles.button} size={20} onPress={() => showToast()} />
           <IconButton icon="cog-outline" style={styles.button} size={20} onPress={() => navigation.navigate('Settings')} />
         </View>
 

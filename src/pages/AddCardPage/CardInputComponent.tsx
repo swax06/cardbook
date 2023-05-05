@@ -146,8 +146,17 @@ const CardInputComponent = () => {
             textContentType: 'none',
             inputMode: 'none',
             autoComplete: 'off',
-            keyboardType: 'web-search',
+            keyboardType: 'default',
             autoCapitalize: 'characters'
+        },
+        {
+            id: 'tags',
+            label: 'Tags',
+            textContentType: 'none',
+            inputMode: 'none',
+            autoComplete: 'off',
+            keyboardType: 'default',
+            autoCapitalize: 'words'
         },
     ];
 
@@ -196,6 +205,7 @@ const CardInputComponent = () => {
                     {JSXFormMap.cardType}
                 </View>
             </View>
+            {JSXFormMap.tags}
             <Text style={styles.label} children={'Card Colors'} />
             <ColorPicker colorList={CARD_COLORS} initColor={cardInput.cardColor} style={{ borderRadius: 5, borderWidth: 1 }} onChangeColor={(x) => updateCard({ cardColor: x })} />
         </View>

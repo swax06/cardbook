@@ -7,26 +7,18 @@ GoogleSignin.configure({
 });
 
 const getAppfiles = async () => {
-    try {
-        await googleSignIn();
-        const fileList = await gdrive.files.list({
-            pageSize: 100,
-            spaces: 'appDataFolder',
-            fields: 'files(id, name)'
-        });
-        return fileList.files;
-    } catch (error) {
-        return [];
-    }
+    await googleSignIn();
+    const fileList = await gdrive.files.list({
+        pageSize: 100,
+        spaces: 'appDataFolder',
+        fields: 'files(id, name)'
+    });
+    return fileList.files;
 }
 
 const getFileContent = async (fileId: string) => {
-    try {
-        const data = (await gdrive.files.getJson(fileId));
-        return data;
-    } catch (error) {
-        return {};
-    }
+    const data = (await gdrive.files.getJson(fileId));
+    return data;
 }
 
 export const deleteCloudBackup = async () => {
@@ -73,6 +65,7 @@ export const signOut = async () => {
         const isSignedIn = await GoogleSignin.isSignedIn();
         if (isSignedIn) {
             await GoogleSignin.signOut();
+            gdrive.accessToken = undefined;
         }
         return true;
     } catch (error) {
@@ -84,7 +77,6 @@ export const signOut = async () => {
 export const uploadData = async (fileName: string, payload: any) => {
     try {
         await googleSignIn();
-        gdrive.accessToken = (await GoogleSignin.getTokens()).accessToken;
         const files = await getAppfiles();
         let fileId = files.find((x: any) => x.name === fileName)?.id;        
         if(!fileId){
@@ -115,7 +107,6 @@ export const uploadData = async (fileName: string, payload: any) => {
 export const downloadData = async (fileName: string) => {
     try {
         await googleSignIn();
-        gdrive.accessToken = (await GoogleSignin.getTokens()).accessToken;
         const files = await getAppfiles();
         const fileInfo = files.find((x: any) => x.name === fileName);
         let data = null;

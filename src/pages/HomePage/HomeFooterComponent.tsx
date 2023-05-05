@@ -22,7 +22,7 @@ const HomeFooterComponent = () => {
     if (!inputText)
       removeFilter(COMPONENT_KEY);
     else
-      appendFilter(COMPONENT_KEY, { bankName: inputText, cardName: inputText, cardHolder: inputText })
+      appendFilter(COMPONENT_KEY, { bankName: inputText, cardName: inputText, cardHolder: inputText, tags: inputText })
   }, [input]);
 
   const containerStyle = useAnimatedStyle(() => ({

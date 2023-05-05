@@ -6,7 +6,6 @@ export const useKeyboard = () => {
 
   useEffect(() => {
     function onKeyboardDidShow(e: KeyboardEvent) {
-      console.log(e)
       setKeyboardHeight(e.endCoordinates.height);
     }
 

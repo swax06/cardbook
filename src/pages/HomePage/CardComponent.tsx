@@ -1,19 +1,23 @@
-import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native'
-import React, { useState } from 'react'
+import { Pressable, StyleSheet, View, useWindowDimensions, Animated as Animated1, GestureResponderEvent, TouchableHighlight, PanResponder, Share } from 'react-native'
+import React, { Ref, useRef, useState } from 'react'
 import CardBackComponent from '../../shared-components/CardBackComponent';
 import CardFrontComponent from '../../shared-components/CardFrontComponent';
 import { trigger } from 'react-native-haptic-feedback';
 import { ICard } from '../../types/CardInterface';
-import Animated, { Extrapolate, interpolate, runOnJS, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { Extrapolate, interpolate, interpolateColor, runOnJS, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import {
     PanGestureHandler,
-    PanGestureHandlerGestureEvent
+    PanGestureHandlerGestureEvent,
+    TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
-import { Button, FAB, Modal, Portal, Text } from 'react-native-paper';
+import { Button, FAB, IconButton, IconButtonProps, Modal, Portal, Text, TouchableRipple } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ACTIONS, useAppData } from '../../context/AppDataContext';
 import { useTheme } from '../../context/ThemeContext';
+import PanButton from './PanButton';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { removeCardNumberSpaces } from '../../utils/utilFunctions';
 
 const options = {
     enableVibrateFallback: true,
@@ -21,7 +25,9 @@ const options = {
 };
 
 type contextType = {
-    inDismissArea: boolean
+    inDismissArea: boolean,
+    inSnapArea: boolean,
+    prevTranslateX: number
 };
 
 const CardComponent = ({ card }: { card: ICard }) => {
@@ -30,25 +36,36 @@ const CardComponent = ({ card }: { card: ICard }) => {
     const [visible, setVisible] = useState(false);
     const navigation = useNavigation<NativeStackNavigationProp<any>>();
     const SCREEN_WIDTH = useWindowDimensions().width;
-    const TRANSLATEX_THRESHOLD = -SCREEN_WIDTH * 0.5;
     const scale = 1075 / SCREEN_WIDTH;
     const itemTranslateX = useSharedValue(0);
     const HEIGHT = 634 / scale;
     const WIDTH = HEIGHT * 86 / 54;
+    const DISMISS_THRESHOLD = -WIDTH * 0.6;
+    const SNAP_THRESHOLD = -WIDTH * 0.2;
     const itemHeight = useSharedValue(HEIGHT);
     const itemMarginTop = useSharedValue(15);
     const pillOpacity = useSharedValue(1);
     const { updateCardList } = useAppData();
     const panGesture = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, contextType>({
+        onStart(event, context) {
+            context.prevTranslateX = itemTranslateX.value;
+        },
         onActive: (e, context) => {
-            itemTranslateX.value = e.translationX < 0 ? e.translationX : 0;
-            if (!context.inDismissArea && itemTranslateX.value < TRANSLATEX_THRESHOLD) {
+            itemTranslateX.value = context.prevTranslateX + e.translationX;
+            if (!context.inSnapArea && itemTranslateX.value < SNAP_THRESHOLD/2) {
+                context.inSnapArea = true;
+            }
+            if (context.inSnapArea && itemTranslateX.value > SNAP_THRESHOLD/2) {
+                context.inSnapArea = false;
+            }
+            if (!context.inDismissArea && itemTranslateX.value < DISMISS_THRESHOLD) {
                 context.inDismissArea = true;
                 runOnJS(trigger)('impactLight', options);
                 pillOpacity.value = 0;
             }
-            if (context.inDismissArea && itemTranslateX.value > TRANSLATEX_THRESHOLD) {
+            if (context.inDismissArea && itemTranslateX.value > DISMISS_THRESHOLD) {
                 context.inDismissArea = false;
+                context.inSnapArea = true;
                 runOnJS(trigger)('impactLight', options);
                 pillOpacity.value = 1;
             }
@@ -61,8 +78,12 @@ const CardComponent = ({ card }: { card: ICard }) => {
                 context.inDismissArea = false;
                 runOnJS(setVisible)(true);
             }
-            else
+            else if (context.inSnapArea) {
+                itemTranslateX.value = withTiming(SNAP_THRESHOLD);
+            }
+            else {
                 itemTranslateX.value = withTiming(0);
+            }
         },
     });
 
@@ -76,28 +97,33 @@ const CardComponent = ({ card }: { card: ICard }) => {
 
     const handleCancelDelete = () => {
         setVisible(false);
-        itemTranslateX.value = withTiming(0);
-        itemHeight.value = withTiming(634 / scale);
+        closeOptions();
+        itemHeight.value = withTiming(HEIGHT);
         itemMarginTop.value = withTiming(15);
         pillOpacity.value = 1;
     }
 
-    const actionStyle = useAnimatedStyle(() => ({
-        height: itemHeight.value,
-        width: -itemTranslateX.value > WIDTH ? WIDTH : -itemTranslateX.value,
-        position: 'absolute',
-        right: 0,
-        marginTop: itemMarginTop.value,
-        borderRadius: 15,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: theme.colors.errorContainer,
-    }));
+    const actionStyle = useAnimatedStyle(() => {
+        const inter = interpolateColor(-itemTranslateX.value, [-SNAP_THRESHOLD, WIDTH / 2], [theme.colors.card, theme.colors.errorContainer])  //interpolate(-itemTranslateX.value, [80, WIDTH/2], [0.01, 1], Extrapolate.CLAMP);
+        return ({
+            height: itemHeight.value,
+            width: -itemTranslateX.value > WIDTH ? WIDTH : -itemTranslateX.value,
+            position: 'absolute',
+            right: 0,
+            marginTop: itemMarginTop.value,
+            borderRadius: 15,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: inter//`rgb(${255 - (55 * inter)}, ${255 - (215 * inter)}, ${255 - (215 * inter)})`,
+        })
+    });
 
-    const pillIconStyle = useAnimatedStyle(() => ({
-        height: 5,
-        width: 20,
-        backgroundColor: theme.colors.text,
+    const pillIconStyle = useAnimatedStyle(() => {
+        pillOpacity.value = interpolate(-itemTranslateX.value, [-SNAP_THRESHOLD, WIDTH/2], [1, 0], Extrapolate.EXTEND);
+        return ({
+        // height: 5,
+        // width: 20,
+        // backgroundColor: theme.colors.text,
         opacity: pillOpacity.value,
         transform: [{
             scale: interpolate(-itemTranslateX.value < HEIGHT ? -itemTranslateX.value : (2 * -itemTranslateX.value) - HEIGHT,
@@ -105,7 +131,7 @@ const CardComponent = ({ card }: { card: ICard }) => {
                 [0.01, 1],
                 Extrapolate.CLAMP)
         }],
-    }));
+    })});
 
     const removeTextStyle = useAnimatedStyle(() => ({
         ...StyleSheet.absoluteFillObject,
@@ -114,21 +140,37 @@ const CardComponent = ({ card }: { card: ICard }) => {
         opacity: 1 - pillOpacity.value,
     }));
 
+    const closeOptions = () => {
+        itemTranslateX.value = withTiming(0);
+    }
+
+    const handleShare = async () => {
+        await Share.share({
+            message: `Card Number: ${removeCardNumberSpaces(card.cardNumber)}\nExpiry Date: ${card.expiryDate}\n\nThis Card is shared via Card Book App`,
+        });
+        closeOptions();
+    }
+
     return (
         <View>
             <Animated.View style={actionStyle}>
-                <Animated.View style={pillIconStyle} />
+                <Animated.View style={[pillIconStyle, { flexDirection: 'column' }]}>
+                    <PanButton onPress={() => {navigation.navigate('AddCard', { card: card }); closeOptions();}} icon={'credit-card-edit-outline'}/>
+                    <PanButton onPress={handleShare} icon={'share-variant'} />
+                    <PanButton onPress={closeOptions} icon={'close'} />
+                </Animated.View>
                 <Animated.View style={removeTextStyle}>
                     <Text style={[styles.removeText]}>Delete</Text>
                 </Animated.View>
             </Animated.View>
             <PanGestureHandler onGestureEvent={panGesture} activeOffsetX={[-50, SCREEN_WIDTH]} activeOffsetY={[-9999, 9999]}>
-                <Animated.View style={cardStyle}>
+                <Animated.View style={cardStyle} >
                     <Pressable onLongPress={() => { setShowCardBack(true); trigger('impactLight', options) }} onPressOut={() => { setShowCardBack(false) }}>
                         {!showCardBack &&
                             <>
                                 <CardFrontComponent card={card} copySupport={true} />
-                                <FAB icon='pencil-outline' style={styles.editBtn} mode='flat' variant='surface' customSize={70 / scale} onPress={() => navigation.navigate('AddCard', { card: card })} />
+
+                                {/* <FAB icon='pencil-outline' style={styles.editBtn} mode='flat' variant='surface' customSize={70 / scale} onPress={() => navigation.navigate('AddCard', { card: card })} /> */}
                             </>
                         }
                         {showCardBack && <CardBackComponent card={card} />}

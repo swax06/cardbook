@@ -7,6 +7,7 @@ export interface IBasicCard {
     bankName: string;
     cardName: string;
     cardType: cardTypes;
+    tags: string;
 };
 
 export interface ICard extends IBasicCard {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { StyleSheet, View, Image, Text, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, View, Image, Text, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import { ICard } from '../types/CardInterface';
 import { CreditCardProcessor } from '../lib/CardProcessorLib/types/types';
 import creditCardProcessor from '../lib/CardProcessorLib';
@@ -12,6 +12,7 @@ import { CARD_DARK_FONT_COLOR, CARD_LIGHT_FONT_COLOR } from '../data/ColorDefina
 export default function CardFrontComponent({ card, copySupport = false }: { card: ICard, copySupport?: boolean }) {
   const [cardProcessor, setCardProcessor] = useState<CreditCardProcessor[]>(() => creditCardProcessor(''));
   const [textColor, setTextColor] = useState<string>(CARD_LIGHT_FONT_COLOR);
+  const [tagTextColor, setTagTextColor] = useState<string>(CARD_DARK_FONT_COLOR);
   const { width } = useWindowDimensions();
   const styles = useMemo(() => createStyles(1075 / width), [width]);
 
@@ -22,13 +23,15 @@ export default function CardFrontComponent({ card, copySupport = false }: { card
   useEffect(() => {
     if (color(card.cardColor).luminosity() > 0.270) {
       setTextColor(CARD_DARK_FONT_COLOR);
+      setTagTextColor(CARD_LIGHT_FONT_COLOR);
     } else {
       setTextColor(CARD_LIGHT_FONT_COLOR);
+      setTagTextColor(CARD_DARK_FONT_COLOR);
     }
   }, [card.cardColor]);
 
   const copyToClipboard = (text: string) => {
-    if(copySupport)
+    if (copySupport)
       Clipboard.setString(text);
   };
 
@@ -39,10 +42,19 @@ export default function CardFrontComponent({ card, copySupport = false }: { card
         <Text allowFontScaling={false} style={{ ...styles.smallText, color: textColor }} numberOfLines={1} ellipsizeMode='middle'>{card.cardName.trim().toUpperCase()}</Text>
       </View>
       <View style={styles.content}>
-        <Image
-          style={styles.chip}
-          source={require('../assets/chip.jpg')}
-        />
+        <View style={styles.row}>
+          <Image
+            style={styles.chip}
+            source={require('../assets/chip.jpg')}
+          />
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            <View onStartShouldSetResponder={() => true} style={{ flexDirection: 'row' }}>
+              {card.tags?.split(',')?.filter(x => !!x.trim()).map((x, i) => (
+                <Text allowFontScaling={false} key={i} style={{ ...styles.tag, color: tagTextColor, backgroundColor: color(textColor).alpha(0.5).toString() }}>&#8226;  {x.trim()}</Text>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
         <TouchableWithoutFeedback onPress={() => copyToClipboard(removeCardNumberSpaces(card.cardNumber.trim()))}>
           <Text allowFontScaling={false} style={{ ...styles.largeText, color: textColor }}>{card.cardNumber.trim()}</Text>
         </TouchableWithoutFeedback>
@@ -59,7 +71,7 @@ export default function CardFrontComponent({ card, copySupport = false }: { card
             <Text allowFontScaling={false} style={{ ...styles.cardHolder, color: textColor }} numberOfLines={1}>{card.cardHolder.trim().toUpperCase()}</Text>
           </TouchableWithoutFeedback>
         </View>
-        { cardProcessor[0].processor !== 'default' && <Image
+        {cardProcessor[0].processor !== 'default' && <Image
           style={styles.logo}
           source={cardProcessor[0].logoFilled}
         />}
@@ -151,5 +163,22 @@ const createStyles = (scaleFactor: number) => StyleSheet.create({
     fontSize: 64 / scaleFactor,
     marginRight: 'auto'
   },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tag: {
+    fontSize: 32 / scaleFactor,
+    fontWeight: 'bold',
+    padding: 3,
+    paddingRight: 10,
+    paddingLeft: 7,
+    borderRadius: 7,
+    borderBottomLeftRadius: 15,
+    borderTopLeftRadius: 15,
+    borderColor: 'white',
+    borderWidth: 0.25,
+    marginRight: 10
+  }
 });
 

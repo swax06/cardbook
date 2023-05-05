@@ -1,10 +1,9 @@
 import { ScrollView, StyleSheet } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import HomeHeaderComponent from './HomeHeaderComponent';
 import CardListComponent from './CardListComponent';
 import HomeFooterComponent from './HomeFooterComponent';
 import HomeProvider from './HomeContext';
-import EmptySpace from '../../shared-components/EmptySpace';
 
 const HomePage = () => {
   return (

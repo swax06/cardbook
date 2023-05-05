@@ -32,13 +32,10 @@ const DataSection = () => {
     };
 
     const handleDelete = async () => {
-        try {
-            await deleteCloudBackup();
-            await signOut();
-            setCloudBackupEnabled(false);
-        } catch (error) {
-
-        }
+        await deleteCloudBackup();
+        await signOut();
+        setCloudBackupEnabled(false);
+        setVisible(false);
     }
 
     return (
@@ -53,8 +50,8 @@ const DataSection = () => {
                 <Switch style={{ backfaceVisibility: 'hidden' }} value={cloudBackupEnabled} onValueChange={(x) => handleBackupSwitch(x)} />
             </View>
             <EmptySpace space={15}/>
-            <TouchableOpacity onPress={() => setVisible(true)}>
-                <View style={styles.row}>
+            <TouchableOpacity onPress={() => setVisible(true)} disabled={!cloudBackupEnabled}>
+                <View style={[styles.row, {opacity: cloudBackupEnabled ? 1 : 0.5}]}>
                     <View>
                         <Text variant='titleLarge' style={styles.subHeading}>Unlink Card Book</Text>
                         <Text variant='bodySmall'>Delete cloud backup and revoke access</Text>

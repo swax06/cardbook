@@ -15,7 +15,7 @@ const AddCardHeaderComponent = () => {
       {/* <EmptySpace space={20} /> */}
       <Text style={styles.heading} variant="headlineSmall">{`${pageMode} Card Details`}</Text>
       <EmptySpace space={5} />
-      <View style={{padding: 10}}>
+      <View style={{paddingTop: 10}}>
         <CardFrontComponent card={cardInput} />
       </View>
     </View>

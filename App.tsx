@@ -35,7 +35,6 @@ function App(): JSX.Element {
         fallbackToPinCodeAction: true,
         cancelTitle: 'Cancel'
       }).then(response => {
-        console.log(response);
         if (response.success) {
           setAuthSuccess(true);
           ReactHelperModule.removeSplashScreen();
