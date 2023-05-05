@@ -3,9 +3,11 @@ import React from 'react'
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler'
 import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 import { IconButton } from 'react-native-paper'
+import { useTheme } from '../../context/ThemeContext'
 
 const PanButton = ({ onPress, icon }: { onPress: () => void, icon: string }) => {
     const buttonOpacity = useSharedValue(1);
+    const { theme } = useTheme();
 
     const panGesture1 = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
         onStart() {
@@ -25,6 +27,9 @@ const PanButton = ({ onPress, icon }: { onPress: () => void, icon: string }) => 
                     icon={icon}
                     mode='outlined'
                     size={20}
+                    iconColor={theme.colors.primary}
+                    borderless={true}
+                    style={{borderRadius: 10}}
                 />
             </Animated.View>
         </PanGestureHandler>

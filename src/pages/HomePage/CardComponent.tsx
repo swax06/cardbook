@@ -44,7 +44,7 @@ const CardComponent = ({ card }: { card: ICard }) => {
     const SNAP_THRESHOLD = -WIDTH * 0.2;
     const itemHeight = useSharedValue(HEIGHT);
     const itemMarginTop = useSharedValue(15);
-    const pillOpacity = useSharedValue(1);
+    const menuOpacity = useSharedValue(1);
     const { updateCardList } = useAppData();
     const panGesture = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, contextType>({
         onStart(event, context) {
@@ -61,13 +61,13 @@ const CardComponent = ({ card }: { card: ICard }) => {
             if (!context.inDismissArea && itemTranslateX.value < DISMISS_THRESHOLD) {
                 context.inDismissArea = true;
                 runOnJS(trigger)('impactLight', options);
-                pillOpacity.value = 0;
+                menuOpacity.value = 0;
             }
             if (context.inDismissArea && itemTranslateX.value > DISMISS_THRESHOLD) {
                 context.inDismissArea = false;
                 context.inSnapArea = true;
                 runOnJS(trigger)('impactLight', options);
-                pillOpacity.value = 1;
+                menuOpacity.value = 1;
             }
         },
         onEnd: (e, context) => {
@@ -97,14 +97,14 @@ const CardComponent = ({ card }: { card: ICard }) => {
 
     const handleCancelDelete = () => {
         setVisible(false);
-        closeOptions();
+        closeMenu();
         itemHeight.value = withTiming(HEIGHT);
         itemMarginTop.value = withTiming(15);
-        pillOpacity.value = 1;
+        menuOpacity.value = 1;
     }
 
     const actionStyle = useAnimatedStyle(() => {
-        const inter = interpolateColor(-itemTranslateX.value, [-SNAP_THRESHOLD, WIDTH / 2], [theme.colors.card, theme.colors.errorContainer])  //interpolate(-itemTranslateX.value, [80, WIDTH/2], [0.01, 1], Extrapolate.CLAMP);
+        const interBackground = interpolateColor(-itemTranslateX.value, [-SNAP_THRESHOLD, WIDTH / 2], [theme.colors.card, theme.colors.errorContainer]);
         return ({
             height: itemHeight.value,
             width: -itemTranslateX.value > WIDTH ? WIDTH : -itemTranslateX.value,
@@ -114,33 +114,28 @@ const CardComponent = ({ card }: { card: ICard }) => {
             borderRadius: 15,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: inter//`rgb(${255 - (55 * inter)}, ${255 - (215 * inter)}, ${255 - (215 * inter)})`,
+            backgroundColor: interBackground,
         })
     });
 
-    const pillIconStyle = useAnimatedStyle(() => {
-        pillOpacity.value = interpolate(-itemTranslateX.value, [-SNAP_THRESHOLD, WIDTH/2], [1, 0], Extrapolate.EXTEND);
-        return ({
-        // height: 5,
-        // width: 20,
-        // backgroundColor: theme.colors.text,
-        opacity: pillOpacity.value,
+    const optionsStyle = useAnimatedStyle(() => ({
+        opacity: menuOpacity.value,
         transform: [{
             scale: interpolate(-itemTranslateX.value < HEIGHT ? -itemTranslateX.value : (2 * -itemTranslateX.value) - HEIGHT,
                 [20, 30],
                 [0.01, 1],
                 Extrapolate.CLAMP)
         }],
-    })});
+    }));
 
     const removeTextStyle = useAnimatedStyle(() => ({
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'center',
         alignItems: 'center',
-        opacity: 1 - pillOpacity.value,
+        opacity: 1 - menuOpacity.value,
     }));
 
-    const closeOptions = () => {
+    const closeMenu = () => {
         itemTranslateX.value = withTiming(0);
     }
 
@@ -148,16 +143,16 @@ const CardComponent = ({ card }: { card: ICard }) => {
         await Share.share({
             message: `Card Number: ${removeCardNumberSpaces(card.cardNumber)}\nExpiry Date: ${card.expiryDate}\n\nThis Card is shared via Card Book App`,
         });
-        closeOptions();
+        closeMenu();
     }
 
     return (
         <View>
             <Animated.View style={actionStyle}>
-                <Animated.View style={[pillIconStyle, { flexDirection: 'column' }]}>
-                    <PanButton onPress={() => {navigation.navigate('AddCard', { card: card }); closeOptions();}} icon={'credit-card-edit-outline'}/>
+                <Animated.View style={[optionsStyle, { flexDirection: 'column' }]}>
+                    <PanButton onPress={() => {navigation.navigate('AddCard', { card: card }); closeMenu();}} icon={'credit-card-edit-outline'}/>
                     <PanButton onPress={handleShare} icon={'share-variant'} />
-                    <PanButton onPress={closeOptions} icon={'close'} />
+                    <PanButton onPress={closeMenu} icon={'close'} />
                 </Animated.View>
                 <Animated.View style={removeTextStyle}>
                     <Text style={[styles.removeText]}>Delete</Text>

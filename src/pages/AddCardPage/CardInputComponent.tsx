@@ -1,6 +1,6 @@
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View, TextInput as NativeTextInput } from 'react-native';
 import React, { useState } from 'react';
-import { Text, TextInput, TextInputProps } from 'react-native-paper';
+import { IconButton, Text, TextInput, TextInputProps, Tooltip } from 'react-native-paper';
 import creditCardProcessor from "../../lib/CardProcessorLib";
 import { CreditCardProcessor } from '../../lib/CardProcessorLib/types/types';
 import TextInputMask from 'react-native-text-input-mask';
@@ -84,6 +84,22 @@ const CardInputComponent = () => {
             />)
     };
 
+    const tagsRenderer = (config: IFormConfig) => {
+        return (props: TextInputProps) => (
+            <View style={styles.innerContainer}>
+                <NativeTextInput
+                    {...props}
+                    onChange={(text) => {
+                        updateCard({ [config.id]: text });
+                    }}
+                    style={{ ...styles.textMask, color: textColor }}
+                />
+                <Tooltip title="Use ( , ) to split tags" enterTouchDelay={0} leaveTouchDelay={2000}>
+                    <IconButton icon="information-outline" />
+                </Tooltip>
+            </View>)
+    };
+
     const formConfig: IFormConfig[] = [
         {
             id: 'cardHolder',
@@ -156,7 +172,8 @@ const CardInputComponent = () => {
             inputMode: 'none',
             autoComplete: 'off',
             keyboardType: 'default',
-            autoCapitalize: 'words'
+            autoCapitalize: 'words',
+            renderer: tagsRenderer
         },
     ];
 
