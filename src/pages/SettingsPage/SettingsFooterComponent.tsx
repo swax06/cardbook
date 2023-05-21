@@ -9,7 +9,7 @@ const SettingsFooterComponent = () => {
     const navigation = useNavigation<NativeStackNavigationProp<any>>();
     const { bottom } = useSafeAreaInsets();
     return (
-        <View style={{...styles.container, bottom: bottom + 10}}>
+        <View style={{ ...styles.container, bottom: bottom + 10 }}>
             <FAB icon="keyboard-backspace" mode='elevated' elevation={3} style={styles.button} customSize={55} onPress={() => navigation.goBack()} />
         </View>
     );

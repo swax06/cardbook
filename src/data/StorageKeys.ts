@@ -7,3 +7,5 @@ export const APP_PREFERENCE_KEYS = {
 };
 
 export const CARD_DATA_CLOUD_STORAGE_KEY = 'card-data-cloud-storage-key';
+export const PENDING_DOWNLOAD_KEY = 'pending-download-key';
+export const PENDING_UPLOAD_KEY = 'pending-upload-key';

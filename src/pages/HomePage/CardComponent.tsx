@@ -42,6 +42,9 @@ const CardComponent = ({ card }: { card: ICard }) => {
     const WIDTH = HEIGHT * 86 / 54;
     const DISMISS_THRESHOLD = -WIDTH * 0.6;
     const SNAP_THRESHOLD = -WIDTH * 0.2;
+    const TriggerOffsetInactive = [-50, SCREEN_WIDTH];
+    const TriggerOffsetActive = [-50, 50];
+    const [triggerOffset, setTriggerOffset] = useState(TriggerOffsetInactive);
     const itemHeight = useSharedValue(HEIGHT);
     const itemMarginTop = useSharedValue(15);
     const menuOpacity = useSharedValue(1);
@@ -51,7 +54,8 @@ const CardComponent = ({ card }: { card: ICard }) => {
             context.prevTranslateX = itemTranslateX.value;
         },
         onActive: (e, context) => {
-            itemTranslateX.value = context.prevTranslateX + e.translationX;
+            let translateX = context.prevTranslateX + e.translationX
+            itemTranslateX.value = translateX < 0 ? translateX : 0;
             if (!context.inSnapArea && itemTranslateX.value < SNAP_THRESHOLD/2) {
                 context.inSnapArea = true;
             }
@@ -77,12 +81,15 @@ const CardComponent = ({ card }: { card: ICard }) => {
                 itemMarginTop.value = withTiming(0);
                 context.inDismissArea = false;
                 runOnJS(setVisible)(true);
+                runOnJS(setTriggerOffset)(TriggerOffsetInactive);
             }
             else if (context.inSnapArea) {
                 itemTranslateX.value = withTiming(SNAP_THRESHOLD);
+                runOnJS(setTriggerOffset)(TriggerOffsetActive);
             }
             else {
                 itemTranslateX.value = withTiming(0);
+                runOnJS(setTriggerOffset)(TriggerOffsetInactive);
             }
         },
     });
@@ -137,6 +144,7 @@ const CardComponent = ({ card }: { card: ICard }) => {
 
     const closeMenu = () => {
         itemTranslateX.value = withTiming(0);
+        setTriggerOffset(TriggerOffsetInactive);
     }
 
     const handleShare = async () => {
@@ -152,13 +160,13 @@ const CardComponent = ({ card }: { card: ICard }) => {
                 <Animated.View style={[optionsStyle, { flexDirection: 'column' }]}>
                     <PanButton onPress={() => {navigation.navigate('AddCard', { card: card }); closeMenu();}} icon={'credit-card-edit-outline'}/>
                     <PanButton onPress={handleShare} icon={'share-variant'} />
-                    <PanButton onPress={closeMenu} icon={'close'} />
+                    {/* <PanButton onPress={closeMenu} icon={'close'} /> */}
                 </Animated.View>
                 <Animated.View style={removeTextStyle}>
                     <Text style={[styles.removeText]}>Delete</Text>
                 </Animated.View>
             </Animated.View>
-            <PanGestureHandler onGestureEvent={panGesture} activeOffsetX={[-50, SCREEN_WIDTH]} activeOffsetY={[-9999, 9999]}>
+            <PanGestureHandler onGestureEvent={panGesture} activeOffsetX={triggerOffset} activeOffsetY={[-SCREEN_WIDTH, SCREEN_WIDTH]}>
                 <Animated.View style={cardStyle} >
                     <Pressable onLongPress={() => { setShowCardBack(true); trigger('impactLight', options) }} onPressOut={() => { setShowCardBack(false) }}>
                         {!showCardBack &&

@@ -64,7 +64,7 @@ const AppearanceSection = () => {
                 </View>
                 <EmptySpace space={4}/>
                 </>}
-                <ColorPicker colorList={ACCENT_COLORS} initColor={accentColor} size={25} onChangeColor={(color) => setAccentColor(color)} />
+                <ColorPicker colorList={ACCENT_COLORS} initColor={accentColor} size={25} onChangeColor={(color) => setAccentColor(color[0])} />
             </View>
         </View>
     );

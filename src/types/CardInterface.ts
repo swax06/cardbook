@@ -16,4 +16,5 @@ export interface ICard extends IBasicCard {
     securityCode: string;
     cardPin: string;
     cardColor: string; 
+    cardTextColor: string;
 };

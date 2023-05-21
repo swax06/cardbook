@@ -15,7 +15,7 @@ export function useCardData() {
 
 export default function AddCardProvider({ children, card }: { children: any, card?: ICard }) {
   const [cardInput, setCardInput] = useState<ICard>(card ?? newCard());
-  const pageMode =  !!card ? PAGE_MODE.EDIT : PAGE_MODE.ADD; //useRef<PAGE_MODE>();
+  const pageMode =  !!card ? PAGE_MODE.EDIT : PAGE_MODE.ADD;
 
   const updateCard = (event: any) => {
     setCardInput(prev => ({ ...prev, ...event }));

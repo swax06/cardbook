@@ -9,10 +9,15 @@ const CardBackComponent = ({ card }: { card: ICard }) => {
     const [textColor, setTextColor] = useState<string>(CARD_LIGHT_FONT_COLOR);
     const styles = useMemo(() => createStyles(1075 / width), [width]);
     useEffect(() => {
-        if (color(card.cardColor).luminosity() > 0.260) {
-          setTextColor(CARD_DARK_FONT_COLOR);
-        } else {
-          setTextColor(CARD_LIGHT_FONT_COLOR);
+        if (!card.cardTextColor) {
+            if (color(card.cardColor).luminosity() > 0.270) {
+                setTextColor(CARD_DARK_FONT_COLOR);
+            } else {
+                setTextColor(CARD_LIGHT_FONT_COLOR);
+            }
+        }
+        else {
+            setTextColor(card.cardTextColor);
         }
     }, [card.cardColor]);
     return (
@@ -21,8 +26,8 @@ const CardBackComponent = ({ card }: { card: ICard }) => {
             <View style={styles.tape}>
                 <Text allowFontScaling={false} style={styles.cvv}>{card.securityCode}</Text>
             </View>
-            <Text allowFontScaling={false} style={{...styles.pin, color: textColor}}>PIN: {card.cardPin}</Text>
-            <Text allowFontScaling={false} style={{...styles.bankName, color: textColor}}>{card.bankName}</Text>
+            <Text allowFontScaling={false} style={{ ...styles.pin, color: textColor }}>{!!card.cardPin ? 'PIN: ' : ' '}{card.cardPin}</Text>
+            <Text allowFontScaling={false} style={{ ...styles.bankName, color: textColor }}>{card.bankName}</Text>
         </View>
     );
 };
@@ -54,7 +59,7 @@ const createStyles = (scaleFactor: number) => StyleSheet.create({
         width: '60%',
         marginStart: '5%',
         alignItems: 'flex-end',
-        justifyContent:'center'
+        justifyContent: 'center'
     },
     cvv: {
         textAlign: 'center',

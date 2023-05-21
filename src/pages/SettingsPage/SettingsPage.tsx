@@ -17,7 +17,7 @@ const SettingsPage = () => {
         <SecuritySection />
         <DataSection />
         <AboutSection />
-        <EmptySpace space={50}/>
+        <EmptySpace space={50} />
       </ScrollView>
       {/* <SettingsFooterComponent /> */}
     </View>

@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Button, Divider, Modal, Portal, Switch, Text } from 'react-native-paper'
 import { useTheme } from '../../context/ThemeContext'
@@ -17,16 +17,30 @@ const DataSection = () => {
     const handleBackupSwitch = async (x: boolean) => {
         if (x === true) {
             const success = await googleSignIn();
-            if(success) {
+            if (success) {
                 setPendingDownload(true);
                 setCloudBackupEnabled(true);
+            }
+            else {
+                ToastAndroid.showWithGravity(
+                    'Signin Failed',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.CENTER,
+                );
             }
         }
         else {
             const success = await signOut();
-            if(success) {
+            if (success) {
                 setPendingDownload(false);
                 setCloudBackupEnabled(false);
+            }
+            else {
+                ToastAndroid.showWithGravity(
+                    'Signout Failed',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.CENTER,
+                );
             }
         }
     };
@@ -40,20 +54,20 @@ const DataSection = () => {
 
     return (
         <View style={styles.container}>
-            <Text variant='titleSmall' style={{ color: theme.colors.primary, ...styles.heading }}>Data and Sync</Text>
+            <Text variant='titleSmall' style={{ color: theme.colors.primary, ...styles.heading }}>Data and sync</Text>
             <View style={styles.row}>
                 <View>
-                    <Text variant='titleLarge' style={styles.subHeading}>Data Sync</Text>
+                    <Text variant='titleLarge' style={styles.subHeading}>Sync card data</Text>
                     <Text variant='bodySmall'>Backup cards to Google Drive</Text>
                 </View>
                 <Divider style={{ width: 1, height: '50%', marginLeft: 'auto' }} horizontalInset={true} />
                 <Switch style={{ backfaceVisibility: 'hidden' }} value={cloudBackupEnabled} onValueChange={(x) => handleBackupSwitch(x)} />
             </View>
-            <EmptySpace space={15}/>
+            <EmptySpace space={15} />
             <TouchableOpacity onPress={() => setVisible(true)} disabled={!cloudBackupEnabled}>
-                <View style={[styles.row, {opacity: cloudBackupEnabled ? 1 : 0.5}]}>
+                <View style={[styles.row, { opacity: cloudBackupEnabled ? 1 : 0.5 }]}>
                     <View>
-                        <Text variant='titleLarge' style={styles.subHeading}>Unlink Card Book</Text>
+                        <Text variant='titleLarge' style={styles.subHeading}>Unlink card book</Text>
                         <Text variant='bodySmall'>Delete cloud backup and revoke access</Text>
                     </View>
                 </View>

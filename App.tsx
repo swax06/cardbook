@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
-import { NativeModules, StatusBar, StyleSheet,ToastAndroid } from 'react-native';
+import { NativeModules, StatusBar, StyleSheet, ToastAndroid } from 'react-native';
 import { useTheme } from './src/context/ThemeContext';
 import HomePage from './src/pages/HomePage/HomePage';
 import { Provider as PaperProvider } from 'react-native-paper';
@@ -35,21 +35,16 @@ function App(): JSX.Element {
         fallbackToPinCodeAction: true,
         cancelTitle: 'Cancel'
       }).then(response => {
-        if (response.success) {
+        if (response.success || response.error === 'BiometryNotEnrolled') {
           setAuthSuccess(true);
           ReactHelperModule.removeSplashScreen();
         } else {
-          if(response.error === 'BiometryNotEnrolled') {
-            setAuthSuccess(true);
-          }
-          else {
-            ToastAndroid.showWithGravity(
-              'Authentication Failed',
-              ToastAndroid.SHORT,
-              ToastAndroid.CENTER,
-            );
-            ReactHelperModule.closeApp();
-          }
+          ToastAndroid.showWithGravity(
+            'Authentication Failed',
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+          );
+          ReactHelperModule.closeApp();
         }
       });
     }

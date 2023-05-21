@@ -10,7 +10,7 @@ import { useCardData } from './AddCardContext';
 import { removeCardNumberSpaces } from '../../utils/utilFunctions';
 import ColorPicker from '../../shared-components/ColorPicker';
 import { useTheme } from '../../context/ThemeContext';
-import { CARD_COLORS } from '../../data/ColorDefinations';
+import { CARD_COLORS, CARD_COLORS_PAIRS } from '../../data/ColorDefinations';
 
 interface IFormConfig {
     id: keyof ICard;
@@ -224,7 +224,7 @@ const CardInputComponent = () => {
             </View>
             {JSXFormMap.tags}
             <Text style={styles.label} children={'Card Colors'} />
-            <ColorPicker colorList={CARD_COLORS} initColor={cardInput.cardColor} style={{ borderRadius: 5, borderWidth: 1 }} onChangeColor={(x) => updateCard({ cardColor: x })} />
+            <ColorPicker colorList={CARD_COLORS_PAIRS} initColor={cardInput.cardColor} style={{ borderRadius: 5, borderWidth: 1 }} onChangeColor={(x) => updateCard({ cardColor: x[0], cardTextColor: x[1] })} />
         </View>
     );
 };
@@ -240,7 +240,8 @@ const styles = StyleSheet.create({
     },
     textMask: {
         flexGrow: 1,
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
+        maxWidth: '85%'
     },
     cardTypeText: {
         paddingRight: 10,

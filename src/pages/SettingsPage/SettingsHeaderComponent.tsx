@@ -10,7 +10,7 @@ const SettingsHeaderComponent = () => {
         <View style={{ ...styles.container, backgroundColor: theme.colors.card }}>
             {/* <EmptySpace space={20} /> */}
             <Text style={styles.heading} variant="headlineSmall">Settings</Text>
-            <EmptySpace space={5}/>
+            <EmptySpace space={5} />
         </View>
     )
 }

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useReducer, useRef } from 'react';
-import { CARD_DATA_CLOUD_STORAGE_KEY, CARD_DATA_STORAGE_KEY } from '../data/StorageKeys';
+import { CARD_DATA_CLOUD_STORAGE_KEY, CARD_DATA_STORAGE_KEY, PENDING_DOWNLOAD_KEY, PENDING_UPLOAD_KEY } from '../data/StorageKeys';
 import { ICard } from '../types/CardInterface';
 import { retrieveData, storeData } from '../utils/utilFunctions';
 import useLocalStorage from '../hooks/useLocalStorage';
@@ -50,10 +50,10 @@ const reduce = (state: ICard[], { type, payload }: { type: ACTIONS, payload: ICa
 
 export default function AppDataProvider({ children }: { children: any }) {
   const [cardList, dispatch] = useReducer(reduce, []);
-  const [pendingDownload, setPendingDownload] = useLocalStorage('pending-download-key', false);
-  const [pendingUpload, setPendingUpload] = useLocalStorage('pending-upload-key', false);
-  const { cloudBackupEnabled, setCloudBackupEnabled } = useAppPreference();
-  const isFirstRun = useRef(true);
+  const [pendingDownload, setPendingDownload] = useLocalStorage(PENDING_DOWNLOAD_KEY, false);
+  const [pendingUpload, setPendingUpload] = useLocalStorage(PENDING_UPLOAD_KEY, false);
+  const { cloudBackupEnabled } = useAppPreference();
+  const dataInit = useRef(false);
   const netInfo = useNetInfo();
 
   const updateCardList = (action: { type: ACTIONS, payload: ICard[] }) => {
@@ -62,16 +62,16 @@ export default function AppDataProvider({ children }: { children: any }) {
 
   useEffect(() => {
     retrieveData(CARD_DATA_STORAGE_KEY).then((x) => {
-      if (x !== null) dispatch({ type: ACTIONS.SET_CARDS, payload: x })
+      if (x !== null) dispatch({ type: ACTIONS.SET_CARDS, payload: x });
+      setTimeout(() => dataInit.current = true, 0);
     });
   }, []);
 
   useEffect(() => {
-    if (!isFirstRun.current) {
+    if (dataInit.current) {
       storeData(CARD_DATA_STORAGE_KEY, cardList);
       setPendingUpload(true);
     }
-    isFirstRun.current = false;
   }, [cardList]);
 
   useEffect(() => {

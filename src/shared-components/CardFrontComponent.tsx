@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { StyleSheet, View, Image, Text, TouchableWithoutFeedback, ScrollView } from 'react-native';
+import { StyleSheet, View, Image, Text, TouchableWithoutFeedback, ScrollView, Platform, ToastAndroid } from 'react-native';
 import { ICard } from '../types/CardInterface';
 import { CreditCardProcessor } from '../lib/CardProcessorLib/types/types';
 import creditCardProcessor from '../lib/CardProcessorLib';
@@ -21,18 +21,36 @@ export default function CardFrontComponent({ card, copySupport = false }: { card
   }, [card.cardNumber]);
 
   useEffect(() => {
-    if (color(card.cardColor).luminosity() > 0.270) {
-      setTextColor(CARD_DARK_FONT_COLOR);
-      setTagTextColor(CARD_LIGHT_FONT_COLOR);
-    } else {
-      setTextColor(CARD_LIGHT_FONT_COLOR);
-      setTagTextColor(CARD_DARK_FONT_COLOR);
+    if (!card.cardTextColor) {
+      if (color(card.cardColor).luminosity() > 0.270) {
+        setTextColor(CARD_DARK_FONT_COLOR);
+        setTagTextColor(CARD_LIGHT_FONT_COLOR);
+      } else {
+        setTextColor(CARD_LIGHT_FONT_COLOR);
+        setTagTextColor(CARD_DARK_FONT_COLOR);
+      }
+    }
+    else {
+      setTextColor(card.cardTextColor);
+      if (color(card.cardTextColor).luminosity() > 0.270) {
+        setTagTextColor(CARD_DARK_FONT_COLOR);
+      } else {
+        setTagTextColor(CARD_LIGHT_FONT_COLOR);
+      }
     }
   }, [card.cardColor]);
 
   const copyToClipboard = (text: string) => {
-    if (copySupport)
+    if (copySupport) {
       Clipboard.setString(text);
+      if (Number(Platform.Version) < 31) {
+        ToastAndroid.showWithGravity(
+          'Copied to Clipboard',
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER,
+        );
+      }
+    }
   };
 
   return (
@@ -42,7 +60,7 @@ export default function CardFrontComponent({ card, copySupport = false }: { card
         <Text allowFontScaling={false} style={{ ...styles.smallText, color: textColor }} numberOfLines={1} ellipsizeMode='middle'>{card.cardName.trim().toUpperCase()}</Text>
       </View>
       <View style={styles.content}>
-        <View style={styles.row}>
+        <View style={{ ...styles.row, marginLeft: '5%' }}>
           <Image
             style={styles.chip}
             source={require('../assets/chip.jpg')}
@@ -55,16 +73,18 @@ export default function CardFrontComponent({ card, copySupport = false }: { card
             </View>
           </ScrollView>
         </View>
-        <TouchableWithoutFeedback onPress={() => copyToClipboard(removeCardNumberSpaces(card.cardNumber.trim()))}>
-          <Text allowFontScaling={false} style={{ ...styles.largeText, color: textColor }}>{card.cardNumber.trim()}</Text>
-        </TouchableWithoutFeedback>
+        <View style={{ flexGrow: 1, alignSelf: 'center' }}>
+          <TouchableWithoutFeedback onPress={() => copyToClipboard(removeCardNumberSpaces(card.cardNumber.trim()))}>
+            <Text allowFontScaling={false} style={{ ...styles.largeText, color: textColor }}>{card.cardNumber.trim()}</Text>
+          </TouchableWithoutFeedback>
+        </View>
       </View>
       <View style={styles.footer}>
         <View style={styles.footerText}>
           <View style={styles.expiryDate}>
-            <Text allowFontScaling={false} style={{ ...styles.expiryLabel, color: textColor }} numberOfLines={2}>VALID THRU</Text>
-            <TouchableWithoutFeedback onPress={() => copyToClipboard(card.expiryDate.trim())}>
-              <Text allowFontScaling={false} style={{ ...styles.smallText, color: textColor }}>{card.expiryDate.trim()}</Text>
+            {card.expiryDate && <Text allowFontScaling={false} style={{ ...styles.expiryLabel, color: textColor }} numberOfLines={2}>VALID THRU</Text>}
+            <TouchableWithoutFeedback onPress={() => copyToClipboard(card.expiryDate)}>
+              <Text allowFontScaling={false} style={{ ...styles.smallText, color: textColor }}>{card.expiryDate}</Text>
             </TouchableWithoutFeedback>
           </View>
           <TouchableWithoutFeedback onPress={() => copyToClipboard(card.cardHolder.trim().toUpperCase())}>
@@ -89,7 +109,7 @@ const createStyles = (scaleFactor: number) => StyleSheet.create({
     paddingHorizontal: '5%',
     paddingVertical: '4%',
     borderWidth: 0.5,
-    borderColor: '#3d3d3d'
+    borderColor: '#ffffff55'
   },
   cardHolder: {
     fontSize: 45 / scaleFactor,
@@ -124,8 +144,8 @@ const createStyles = (scaleFactor: number) => StyleSheet.create({
   },
   content: {
     marginTop: '5%',
-    marginBottom: '5%',
-    paddingLeft: '5%'
+    marginBottom: '3%',
+    width: '100%'
   },
   footer: {
     flexDirection: 'row',
@@ -144,9 +164,10 @@ const createStyles = (scaleFactor: number) => StyleSheet.create({
     bottom: '20%'
   },
   expiryDate: {
-    marginLeft: 50 / scaleFactor,
+    marginLeft: 70 / scaleFactor,
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: '4%'
   },
   expiryLabel: {
     fontSize: 20 / scaleFactor,

@@ -1,10 +1,17 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GDrive, MimeTypes } from '@robinbobin/react-native-google-drive-api-wrapper';
 
-const gdrive = new GDrive();
-GoogleSignin.configure({
-    scopes: ['https://www.googleapis.com/auth/drive.appdata'],
-});
+let gdrive: GDrive;
+
+const initDataSyncService = () => {
+    if (!gdrive) {
+        gdrive = new GDrive();
+        GoogleSignin.configure({
+            scopes: ['https://www.googleapis.com/auth/drive.appdata'],
+        });
+    }
+}
+
 
 const getAppfiles = async () => {
     await googleSignIn();
@@ -35,6 +42,7 @@ export const deleteCloudBackup = async () => {
 }
 
 export const googleSignIn = async () => {
+    initDataSyncService();
     const isSignedIn = await GoogleSignin.isSignedIn();
     if (!isSignedIn) {
         try {
@@ -50,7 +58,7 @@ export const googleSignIn = async () => {
         }
     }
     else {
-        if(!gdrive.accessToken) {
+        if (!gdrive.accessToken) {
             gdrive.accessToken = (await GoogleSignin.getTokens()).accessToken;
             return true;
         }
@@ -62,6 +70,7 @@ export const googleSignIn = async () => {
 
 export const signOut = async () => {
     try {
+        initDataSyncService();
         const isSignedIn = await GoogleSignin.isSignedIn();
         if (isSignedIn) {
             await GoogleSignin.signOut();
@@ -78,18 +87,18 @@ export const uploadData = async (fileName: string, payload: any) => {
     try {
         await googleSignIn();
         const files = await getAppfiles();
-        let fileId = files.find((x: any) => x.name === fileName)?.id;        
-        if(!fileId){
+        let fileId = files.find((x: any) => x.name === fileName)?.id;
+        if (!fileId) {
             fileId = (await gdrive.files.newMetadataOnlyUploader()
-            .setRequestBody(
-                {
-                    'mimeType': MimeTypes.JSON,
-                    'name': fileName,
-                    'parents': [
-                        'appDataFolder'
-                    ]
-                }
-            ).execute()).id;
+                .setRequestBody(
+                    {
+                        'mimeType': MimeTypes.JSON,
+                        'name': fileName,
+                        'parents': [
+                            'appDataFolder'
+                        ]
+                    }
+                ).execute()).id;
         }
         await gdrive.files.newMediaUploader()
             .setData(JSON.stringify(payload), MimeTypes.JSON)
@@ -97,7 +106,7 @@ export const uploadData = async (fileName: string, payload: any) => {
             .execute();
         return true;
     } catch (error: any) {
-        if(error.name === 'AbortError')
+        if (error.name === 'AbortError')
             return true;
         console.error(error, 'Failed to upload data');
         return false;
@@ -110,7 +119,7 @@ export const downloadData = async (fileName: string) => {
         const files = await getAppfiles();
         const fileInfo = files.find((x: any) => x.name === fileName);
         let data = null;
-        if(!!fileInfo)
+        if (!!fileInfo)
             data = await getFileContent(fileInfo.id);
         return data;
     } catch (error) {

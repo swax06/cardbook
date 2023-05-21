@@ -1,25 +1,42 @@
 import { StyleSheet, View } from 'react-native';
 import React from 'react';
 import { IconButton } from 'react-native-paper';
-import { useTheme } from '../context/ThemeContext';
 import color from 'color';
 
-const ColorPicker = ({ colorList = ['blue'], initColor = 'blue', onChangeColor = (x: string) => { }, size = 30, style = { borderRadius: 100, borderWidth: 0 } }) => {
-    const { theme } = useTheme();
+const PADDING = 14;
+
+const ColorPicker = ({ colorList = [['blue']], initColor = 'blue', onChangeColor = (x: string[]) => { }, size = 30, style = { borderRadius: 100, borderWidth: 0 } }) => {
     return (
         <View style={styles.container}>
             <View style={styles.colorPicker}>
-                {colorList.map((x) => (
-                    <IconButton
-                        key={x}
-                        icon={initColor === x ? 'check-circle' : undefined}
-                        iconColor={color(x).isDark() ? '#ffffff99' : '#00000099'}
-                        size={size}
-                        style={style}
-                        containerColor={x}
-                        animated={true}
-                        mode='contained'
-                        onPress={() => onChangeColor(x)} />
+                {colorList.map((x, i) => (
+                    <View key={i}>
+                        <View style={{ margin: PADDING / 2 }}>
+                            <View style={[styles.row, { height: PADDING + size, width: PADDING + size, borderRadius: style.borderRadius }]}>
+                                {x.map((y, i) => (
+                                    <View key={i}
+                                        style={{
+                                            backgroundColor: y,
+                                            flexGrow: 1,
+                                            borderBottomLeftRadius: i === 0 ? style.borderRadius / 2 : 0,
+                                            borderTopLeftRadius: i === 0 ? style.borderRadius / 2 : 0,
+                                            borderBottomRightRadius: i === x.length - 1 ? style.borderRadius / 2 : 0,
+                                            borderTopRightRadius: i === x.length - 1 ? style.borderRadius / 2 : 0,
+                                        }}>
+                                    </View>
+                                ))}
+                            </View>
+                        </View>
+                        <IconButton
+                            icon={initColor === x[0] ? 'check-circle' : undefined}
+                            iconColor={color(x[0]).isDark() ? '#eeeeee' : '#333333'}
+                            size={size}
+                            style={{ ...style, position: 'absolute' }}
+                            containerColor={'transparent'}
+                            animated={true}
+                            mode='contained'
+                            onPress={() => onChangeColor(x)} />
+                    </View>
                 ))}
             </View>
         </View>
@@ -39,5 +56,8 @@ const styles = StyleSheet.create({
     },
     label: {
         padding: 10
+    },
+    row: {
+        flexDirection: 'row'
     }
 });

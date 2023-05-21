@@ -12,11 +12,11 @@ const SecuritySection = () => {
             <Text variant="titleSmall" style={{ color: theme.colors.primary, ...styles.heading }}>Security</Text>
             <View style={styles.row}>
                 <View>
-                <Text variant='titleLarge' style={styles.subHeading}>App Lock</Text>
-                <Text variant='bodySmall'>System lock should be enabled</Text>
+                    <Text variant='titleLarge' style={styles.subHeading}>App lock</Text>
+                    <Text variant='bodySmall'>System lock should be enabled</Text>
                 </View>
                 <Divider style={{ width: 1, height: '50%', marginLeft: 'auto' }} horizontalInset={true} />
-                <Switch style={{ backfaceVisibility: 'hidden'}} value={authEnabled} onValueChange={(x) => setAuthEnabled(x)} />
+                <Switch style={{ backfaceVisibility: 'hidden' }} value={authEnabled} onValueChange={(x) => setAuthEnabled(x)} />
             </View>
         </View>
     );
