@@ -149,7 +149,7 @@ const CardComponent = ({ card }: { card: ICard }) => {
 
     const handleShare = async () => {
         await Share.share({
-            message: `Card Number: ${removeCardNumberSpaces(card.cardNumber)}\nExpiry Date: ${card.expiryDate}\n\nThis Card is shared via Card Book App`,
+            message: `Card Number: ${removeCardNumberSpaces(card.cardNumber)}\nExpiry Date: ${card.expiryDate}\n\nThis Card is shared via Card Book (https://play.google.com/store/apps/details?id=com.cardbook.app)`,
         });
         closeMenu();
     }

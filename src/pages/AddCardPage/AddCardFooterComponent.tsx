@@ -6,6 +6,7 @@ import { FAB, Snackbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAppPreference } from '../../context/AppPreferenceContext';
 
 const AddCardFooterComponent = () => {
     const navigation = useNavigation<NativeStackNavigationProp<any>>();
@@ -14,6 +15,7 @@ const AddCardFooterComponent = () => {
     const { bottom } = useSafeAreaInsets();
     const [visible, setVisible] = React.useState(false);
     const [msg, setMsg] = useState('');
+    const {isPremiumUser} = useAppPreference();
 
     const cardDataValid = () => {
         if (cardInput.cardNumber === '') {
@@ -33,6 +35,14 @@ const AddCardFooterComponent = () => {
             })
             if(!isValid) {
                 setMsg('Invalid expiry date');
+                setVisible(true);
+                return false;
+            }
+        }
+
+        if(!isPremiumUser) {
+            if(!!cardInput.cardTextColor) {
+                setMsg('License not found! select a basic card');
                 setVisible(true);
                 return false;
             }

@@ -223,7 +223,9 @@ const CardInputComponent = () => {
                 </View>
             </View>
             {JSXFormMap.tags}
-            <Text style={styles.label} children={'Card Colors'} />
+            <Text style={styles.label} children={'Basic Cards'} />
+            <ColorPicker colorList={CARD_COLORS} initColor={cardInput.cardColor} style={{ borderRadius: 5, borderWidth: 1 }} onChangeColor={(x) => updateCard({ cardColor: x[0], cardTextColor: x[1] })} />
+            <Text style={styles.label}>Dual Tone Cards <Text style={{fontSize: 10}}>(premium)</Text></Text>
             <ColorPicker colorList={CARD_COLORS_PAIRS} initColor={cardInput.cardColor} style={{ borderRadius: 5, borderWidth: 1 }} onChangeColor={(x) => updateCard({ cardColor: x[0], cardTextColor: x[1] })} />
         </View>
     );

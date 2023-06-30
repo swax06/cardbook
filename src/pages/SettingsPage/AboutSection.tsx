@@ -4,11 +4,13 @@ import { Text } from 'react-native-paper'
 import { useTheme } from '../../context/ThemeContext'
 import EmptySpace from '../../shared-components/EmptySpace'
 import { version } from '../../../package.json';
+import { useAppPreference } from '../../context/AppPreferenceContext'
 
 const privacyUrl = 'https://sites.google.com/view/card-book-privacy-policy/home';
 const storeUrl = 'https://play.google.com/store/apps/details?id=com.cardbook.app';
 const AboutSection = () => {
     const { theme } = useTheme();
+    const { isPremiumUser } = useAppPreference();
 
     const handleClick = (url: string) => {
         Linking.openURL(url);
@@ -30,6 +32,11 @@ const AboutSection = () => {
                     <Text variant='titleMedium' style={styles.subHeading}>&#9432;</Text>
                 </View>
             </TouchableOpacity>
+            <EmptySpace space={10} />
+            <View style={styles.row}>
+                <Text variant='titleMedium' style={styles.subHeading}>{isPremiumUser ? 'Premium' : 'Basic'} License</Text>
+                {/* <Text variant='titleMedium' style={styles.subHeading}>&#9432;</Text> */}
+            </View>
         </View>
     )
 }

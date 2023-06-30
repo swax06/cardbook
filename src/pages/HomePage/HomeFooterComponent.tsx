@@ -41,7 +41,7 @@ const HomeFooterComponent = () => {
           inputMode='search'
           placeholderTextColor={theme.colors.text}
           numberOfLines={1}
-          style={{ maxWidth: 210, color: theme.colors.text }}
+          style={{ maxWidth: 220, color: theme.colors.text }}
         />
         <FAB icon={!!input ? 'close' : 'plus'} mode='flat' style={styles.button} customSize={55} onPress={() => {
           !!input ? setInput('') : navigation.navigate('AddCard')

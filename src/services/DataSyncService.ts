@@ -1,7 +1,11 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { GDrive, MimeTypes } from '@robinbobin/react-native-google-drive-api-wrapper';
+import { AES, enc } from 'crypto-js';
 
+const UNKNOWN = 'unknown';
 let gdrive: GDrive;
+let userId = UNKNOWN;
+const ENCRYPTION_KEY = 'card-book-secret-key-';
 
 const initDataSyncService = () => {
     if (!gdrive) {
@@ -11,7 +15,6 @@ const initDataSyncService = () => {
         });
     }
 }
-
 
 const getAppfiles = async () => {
     await googleSignIn();
@@ -24,8 +27,19 @@ const getAppfiles = async () => {
 }
 
 const getFileContent = async (fileId: string) => {
-    const data = (await gdrive.files.getJson(fileId));
-    return data;
+    const data = (await gdrive.files.getText(fileId));
+    try {
+        if (userId !== UNKNOWN) {
+            const key = ENCRYPTION_KEY + userId;
+            const parsedData = JSON.parse(AES.decrypt(data, key).toString(enc.Utf8));
+            return parsedData;
+        }
+        else
+            return [];
+    } catch (error) {
+        return [];
+    }
+
 }
 
 export const deleteCloudBackup = async () => {
@@ -51,6 +65,7 @@ export const googleSignIn = async () => {
             });
             await GoogleSignin.signIn();
             gdrive.accessToken = (await GoogleSignin.getTokens()).accessToken;
+            userId = (await GoogleSignin.getCurrentUser())?.user.id ?? UNKNOWN;
             return true;
         } catch (error) {
             console.error('Failed to signin');
@@ -60,6 +75,7 @@ export const googleSignIn = async () => {
     else {
         if (!gdrive.accessToken) {
             gdrive.accessToken = (await GoogleSignin.getTokens()).accessToken;
+            userId = (await GoogleSignin.getCurrentUser())?.user.id ?? UNKNOWN;
             return true;
         }
         else {
@@ -92,7 +108,7 @@ export const uploadData = async (fileName: string, payload: any) => {
             fileId = (await gdrive.files.newMetadataOnlyUploader()
                 .setRequestBody(
                     {
-                        'mimeType': MimeTypes.JSON,
+                        'mimeType': MimeTypes.TEXT,
                         'name': fileName,
                         'parents': [
                             'appDataFolder'
@@ -100,11 +116,17 @@ export const uploadData = async (fileName: string, payload: any) => {
                     }
                 ).execute()).id;
         }
-        await gdrive.files.newMediaUploader()
-            .setData(JSON.stringify(payload), MimeTypes.JSON)
-            .setIdOfFileToUpdate(fileId)
-            .execute();
-        return true;
+        if (userId !== UNKNOWN) {
+            const key = ENCRYPTION_KEY + userId;
+            await gdrive.files.newMediaUploader()
+                .setData(AES.encrypt(JSON.stringify(payload), key).toString(), MimeTypes.TEXT)
+                .setIdOfFileToUpdate(fileId)
+                .execute();
+            return true;
+        }
+        else {
+            return false;
+        }
     } catch (error: any) {
         if (error.name === 'AbortError')
             return true;

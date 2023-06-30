@@ -1,0 +1,1 @@
+export const LIFETIME_LICENSE_PRODUCT_ID = 'card_book_lifetime';

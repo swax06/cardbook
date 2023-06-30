@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { FlatList, Image, StyleSheet, useWindowDimensions, View } from 'react-native';
 import React from 'react';
 import { Text } from 'react-native-paper';
 import { useFilteredCardList } from './HomeContext';
@@ -14,9 +14,10 @@ const CardListComponent = () => {
             contentContainerStyle={{paddingHorizontal: '3%'}}
             ListFooterComponent={<EmptySpace space={'25%'} />}
             ListEmptyComponent={
-                <View style={styles.message}>
-                    <Text variant='titleMedium' style={{ fontWeight: 'bold' }} children={'No Cards'}></Text>
-                </View>
+                <Image
+                        style={styles.img}
+                        source={require('../../assets/no-card.png')}
+                    />
             }
             renderItem={(x) => <CardComponent card={x.item} />}>
         </FlatList>
@@ -29,10 +30,11 @@ const styles = StyleSheet.create({
     card: {
         marginVertical: 10
     },
-    message: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingTop: '70%'
-    }
+    img: {
+        width: 300,
+        height: 200,
+        resizeMode: 'stretch',
+        alignSelf:'center',
+        marginTop: '50%'
+      },
 });

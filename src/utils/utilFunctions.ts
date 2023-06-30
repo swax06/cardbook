@@ -36,7 +36,7 @@ export async function clearStorage() {
 }
 
 export const newCard = (): ICard => {
-    const colorPair = CARD_COLORS_PAIRS[Math.floor(Math.random() * CARD_COLORS_PAIRS.length )];
+    const colorPair = CARD_COLORS[Math.floor(Math.random() * CARD_COLORS.length )];
     return {
         id: String(uuid.v4()),
         cardHolder: '',
@@ -49,6 +49,6 @@ export const newCard = (): ICard => {
         cardType: 'Other',
         tags: '',
         cardColor: colorPair[0],
-        cardTextColor: colorPair[1]
+        cardTextColor: ''
     }
 };

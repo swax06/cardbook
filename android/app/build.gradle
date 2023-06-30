@@ -99,8 +99,9 @@ android {
         applicationId "com.cardbook.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "1.1.2"
+        versionCode 7
+        versionName "1.1.6"
+        missingDimensionStrategy "store", "play"
     }
 
     splits {
@@ -165,7 +166,7 @@ dependencies {
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
     implementation("androidx.biometric:biometric:1.1.0")
-    implementation("androidx.core:core-splashscreen:1.0.0")
+    implementation("androidx.core:core-splashscreen:1.0.0-beta02")
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.squareup.okhttp3', module:'okhttp'

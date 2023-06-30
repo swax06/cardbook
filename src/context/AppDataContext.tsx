@@ -15,7 +15,7 @@ export enum ACTIONS {
 };
 
 const AppDataContext = createContext<{ cardList: ICard[], updateCardList: ({ type, payload }: { type: ACTIONS, payload: ICard[] }) => void }>({ cardList: [], updateCardList: () => { } });
-const AppDataSyncContext = createContext<{ pendingDownload: boolean, setPendingDownload: (s: boolean) => void, pendingUpload: boolean }>({ pendingDownload: false, setPendingDownload: () => { }, pendingUpload: false });
+const AppDataSyncContext = createContext<{ pendingDownload: boolean, setPendingDownload: (s: boolean) => void, pendingUpload: boolean, setPendingUpload: (s: boolean) => void }>({ pendingDownload: false, setPendingDownload: () => { }, pendingUpload: false, setPendingUpload: () => { } });
 export const useAppData = () => {
   return useContext(AppDataContext);
 };
@@ -97,7 +97,7 @@ export default function AppDataProvider({ children }: { children: any }) {
 
   return (
     <AppDataContext.Provider value={{ cardList, updateCardList }}>
-      <AppDataSyncContext.Provider value={{ pendingDownload, setPendingDownload, pendingUpload }}>
+      <AppDataSyncContext.Provider value={{ pendingDownload, setPendingDownload, pendingUpload, setPendingUpload }}>
         {children}
       </AppDataSyncContext.Provider>
     </AppDataContext.Provider>

@@ -18,7 +18,7 @@ export type colorSchemeTypes = typeof colorSchemes[number];
 type appColorSchemeTypes = 'light' | 'dark';
 
 const DEFAULT_COLOR_SCHEME: appColorSchemeTypes = 'light';
-const DEFAULT_ACCENT_COLOR = ACCENT_COLORS[0];
+const DEFAULT_ACCENT_COLOR = ACCENT_COLORS[0][0];
 
 export interface IThemeContext {
   theme: MD3Theme & Theme,

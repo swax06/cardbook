@@ -8,7 +8,8 @@ import ThemeProvider from './src/context/ThemeContext';
 import AppPreferenceProvider from './src/context/AppPreferenceContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import App from './App';
-
+import { withIAPContext } from 'react-native-iap';
+import 'react-native-get-random-values';
 
 const Root = () => (
     <ThemeProvider>
@@ -20,4 +21,4 @@ const Root = () => (
     </ThemeProvider>
 );
 
-AppRegistry.registerComponent(appName, () => Root);
+AppRegistry.registerComponent(appName, () => withIAPContext(Root));

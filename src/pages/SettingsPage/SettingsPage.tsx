@@ -2,13 +2,16 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import React from 'react';
 import AppearanceSection from './AppearanceSection';
 import SettingsHeaderComponent from './SettingsHeaderComponent';
-import SettingsFooterComponent from './SettingsFooterComponent';
 import SecuritySection from './SecuritySection';
 import DataSection from './DataSection';
 import EmptySpace from '../../shared-components/EmptySpace';
 import AboutSection from './AboutSection';
+import PurchaseSection from './PurchaseSection';
+import { useAppPreference } from '../../context/AppPreferenceContext';
+import MiscSection from './MiscSection';
 
 const SettingsPage = () => {
+  const { isPremiumUser } = useAppPreference();
   return (
     <View style={styles.container}>
       <SettingsHeaderComponent />
@@ -16,6 +19,8 @@ const SettingsPage = () => {
         <AppearanceSection />
         <SecuritySection />
         <DataSection />
+        <MiscSection />
+        {!isPremiumUser && <PurchaseSection />}
         <AboutSection />
         <EmptySpace space={50} />
       </ScrollView>

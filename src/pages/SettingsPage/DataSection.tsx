@@ -10,8 +10,8 @@ import { deleteCloudBackup, googleSignIn, signOut } from '../../services/DataSyn
 
 const DataSection = () => {
     const { theme } = useTheme();
-    const { cloudBackupEnabled, setCloudBackupEnabled } = useAppPreference();
-    const { setPendingDownload } = useAppDataSync();
+    const { cloudBackupEnabled, setCloudBackupEnabled, isPremiumUser } = useAppPreference();
+    const { setPendingDownload, setPendingUpload } = useAppDataSync();
     const [visible, setVisible] = useState(false);
 
     const handleBackupSwitch = async (x: boolean) => {
@@ -19,6 +19,7 @@ const DataSection = () => {
             const success = await googleSignIn();
             if (success) {
                 setPendingDownload(true);
+                setPendingUpload(true);
                 setCloudBackupEnabled(true);
             }
             else {
@@ -54,14 +55,14 @@ const DataSection = () => {
 
     return (
         <View style={styles.container}>
-            <Text variant='titleSmall' style={{ color: theme.colors.primary, ...styles.heading }}>Data and sync</Text>
-            <View style={styles.row}>
+            <Text variant='titleSmall' style={{ color: theme.colors.primary, ...styles.heading }}>Data and sync <Text style={{fontSize: 10}}>(premium)</Text></Text>
+            <View style={[styles.row, { opacity: isPremiumUser ? 1 : 0.5 }]}>
                 <View>
                     <Text variant='titleLarge' style={styles.subHeading}>Sync card data</Text>
-                    <Text variant='bodySmall'>Backup cards to Google Drive</Text>
+                    <Text variant='bodySmall'>Encrypted cloud backup in Google Drive</Text>
                 </View>
                 <Divider style={{ width: 1, height: '50%', marginLeft: 'auto' }} horizontalInset={true} />
-                <Switch style={{ backfaceVisibility: 'hidden' }} value={cloudBackupEnabled} onValueChange={(x) => handleBackupSwitch(x)} />
+                <Switch style={{ backfaceVisibility: 'hidden' }} disabled={!isPremiumUser} value={cloudBackupEnabled} onValueChange={(x) => handleBackupSwitch(x)} />
             </View>
             <EmptySpace space={15} />
             <TouchableOpacity onPress={() => setVisible(true)} disabled={!cloudBackupEnabled}>
