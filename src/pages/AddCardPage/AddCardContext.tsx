@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { ICard } from '../../types/CardInterface';
 import { newCard } from '../../utils/utilFunctions';
 

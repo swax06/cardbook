@@ -68,7 +68,7 @@ export default function CardFrontComponent({ card, copySupport = false }: { card
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             <View onStartShouldSetResponder={() => true} style={{ flexDirection: 'row' }}>
               {card.tags?.split(',')?.filter(x => !!x.trim()).map((x, i) => (
-                <Text allowFontScaling={false} key={i} style={{ ...styles.tag, color: tagTextColor, backgroundColor: color(textColor).alpha(0.5).toString() }}>&#8226;  {x.trim()}</Text>
+                <Text allowFontScaling={false} key={i} style={{ ...styles.tag, color: tagTextColor, backgroundColor: color(textColor).alpha(0.8).toString() }}>&#8226;  {x.trim()}</Text>
               ))}
             </View>
           </ScrollView>

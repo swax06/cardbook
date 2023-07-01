@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { NativeModules, StatusBar, StyleSheet, ToastAndroid } from 'react-native';
+import { NativeModules, StatusBar, StyleSheet, ToastAndroid, View } from 'react-native';
 import { useTheme } from './src/context/ThemeContext';
 import HomePage from './src/pages/HomePage/HomePage';
 import { Provider as PaperProvider } from 'react-native-paper';
@@ -39,26 +39,26 @@ function App(): JSX.Element {
     }
     else {
       if (!authSuccess)
-      LocalAuthentication.authenticateAsync({
-        title: 'Unlock Card Book',
-        description: 'Confirm your phone screen lock',
-        reason: '',
-        fallbackToPinCodeAction: true,
-        cancelTitle: 'Cancel'
-      }).then(response => {
-        if (response.success || response.error === 'BiometryNotEnrolled') {
-          setAuthSuccess(true);
-          ReactHelperModule.removeSplashScreen();
-          initPaymentService();
-        } else {
-          ToastAndroid.showWithGravity(
-            'Authentication Failed',
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER,
-          );
-          ReactHelperModule.closeApp();
-        }
-      });
+        LocalAuthentication.authenticateAsync({
+          title: 'Unlock Card Book',
+          description: 'Confirm your phone screen lock',
+          reason: '',
+          fallbackToPinCodeAction: true,
+          cancelTitle: 'Cancel'
+        }).then(response => {
+          if (response.success || response.error === 'BiometryNotEnrolled') {
+            setAuthSuccess(true);
+            ReactHelperModule.removeSplashScreen();
+            initPaymentService();
+          } else {
+            ToastAndroid.showWithGravity(
+              'Authentication Failed',
+              ToastAndroid.SHORT,
+              ToastAndroid.CENTER,
+            );
+            ReactHelperModule.closeApp();
+          }
+        });
     }
     return paymentServiceCleanup;
   }, [authEnabled, authSuccess]);
@@ -144,6 +144,9 @@ function App(): JSX.Element {
                     <Stack.Screen name='Settings' component={SettingsPage} />
                   </Stack.Navigator>
                 </NavigationContainer>
+              }
+              {!authSuccess &&
+                <View style={[styles.container, { backgroundColor: theme.colors.card }]}></View>
               }
             </Suspense>
           </SafeAreaView>

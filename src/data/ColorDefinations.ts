@@ -40,8 +40,8 @@ export const CARD_COLORS = [
     // '#BFDBF7', '#E7D7C1', '#F7F7F7'
 ].map(x => [x]);
 
-export const CARD_DARK_FONT_COLOR = '#1d1d1d';
-export const CARD_LIGHT_FONT_COLOR = '#f0f0f0';
+export const CARD_DARK_FONT_COLOR = '#3d3d3d';
+export const CARD_LIGHT_FONT_COLOR = '#d0d0d0';
 
 export const CARD_COLORS_PAIRS = [
     [
