@@ -61,7 +61,7 @@ function App(): JSX.Element {
         });
     }
     return paymentServiceCleanup;
-  }, [authEnabled, authSuccess]);
+  }, [authSuccess]);
 
   useEffect(() => {
     if (appState === 'background') {

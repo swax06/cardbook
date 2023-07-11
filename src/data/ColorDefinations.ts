@@ -45,8 +45,8 @@ export const CARD_LIGHT_FONT_COLOR = '#d0d0d0';
 
 export const CARD_COLORS_PAIRS = [
     [
-        "#2A5D2A",
-        "#A2A2A1"
+        "#1B2021",
+        "#c0c0c0"
     ],
     [
         "#5F4B8B",

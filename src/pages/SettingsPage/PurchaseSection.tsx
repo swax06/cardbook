@@ -18,6 +18,7 @@ const PurchaseSection = () => {
                 skus: [LIFETIME_LICENSE_PRODUCT_ID]
             });
         } catch (err: any) {
+            // console.error(err);
             // ToastAndroid.showWithGravity(
             //     'Something went wrong! Please try again',
             //     ToastAndroid.SHORT,
@@ -64,6 +65,7 @@ const PurchaseSection = () => {
                 );
             }
         } catch (err) {
+            // console.error(err);
             // ToastAndroid.showWithGravity(
             //     'Something went wrong! Please try later',
             //     ToastAndroid.SHORT,
