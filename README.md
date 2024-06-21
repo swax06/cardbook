@@ -1,6 +1,8 @@
 # CardBook
-
 CardBook is a colorful and secure React Native-based application that allows users to store their credit and debit card information in a categorized manner. With CardBook, users can easily manage their financial information, keep track of their expenses, and make secure payments without having to worry about security breaches.
+
+## Check out App
+  Card Book App @ Google Play Store: https://play.google.com/store/apps/details?id=com.cardbook.app
 
 ## Features
 
