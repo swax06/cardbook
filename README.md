@@ -16,7 +16,7 @@ CardBook is a colorful and secure React Native-based application that allows use
 ## Technology Stack
 
 - React Native for cross-platform development
-- Redux for state management
+- React Context API for state management
 - React Native Elements for UI components
 - React Navigation for app navigation
 - LocalStorage for data storage
